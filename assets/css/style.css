@@ -1,0 +1,95 @@
+/* assets/css/style.css */
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+}
+
+/* Card trắng, viền nhẹ, bóng nhẹ */
+.card-glass {
+    background: #ffffff;
+    border-radius: 0.9rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+}
+
+/* Badge nhỏ */
+.level-chip {
+    display: inline-flex;
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    border: 1px solid #d1d5db;
+    background: #f9fafb;
+    color: #6b7280;
+}
+
+/* Flashcard */
+.flashcard {
+    perspective: 1000px;
+}
+
+.flashcard-inner {
+    position: relative;
+    width: 100%;
+    min-height: 180px;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    cursor: pointer;
+}
+
+.flashcard.is-flipped .flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+.flashcard-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 0.9rem;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Mặt trước */
+.flashcard-front {
+    background: linear-gradient(135deg, #ffffff, #f3f4f6);
+    border: 1px solid #e5e7eb;
+}
+
+/* Mặt sau */
+.flashcard-back {
+    background: linear-gradient(135deg, #e8ffe9, #ffffff);
+    border: 1px solid #7AE582;
+    transform: rotateY(180deg);
+}
+
+/* SweetAlert light */
+.swal2-popup {
+    background: #ffffff !important;
+    color: #111827 !important;
+    border-radius: 0.9rem !important;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+}
+
+.swal2-title {
+    color: #111827 !important;
+}
+
+.swal2-html-container {
+    color: #4b5563 !important;
+}
+
+.swal2-confirm {
+    background: #7AE582 !important;
+    color: #022c22 !important;
+    border-radius: 999px !important;
+    border: none !important;
+}
+
+.swal2-cancel {
+    border-radius: 999px !important;
+}
