@@ -1,0 +1,6 @@
+# Không commit file cấu hình DB local
+config/db.local.php
+
+# (tuỳ chọn) các file cấu hình nhạy cảm khác
+.env
+.env.local
