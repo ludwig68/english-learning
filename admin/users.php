@@ -289,7 +289,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
                 <div class="hidden sm:flex items-center gap-3 text-xs">
                     <!-- Nút thêm người dùng -->
-                    <a href="/admin/user_form.php"
+                    <a href="/admin/users_form.php"
                         class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-emerald-950 font-semibold hover:bg-primary-dark hover:text-emerald-50">
                         <i class="fa-solid fa-user-plus text-[0.75rem]"></i>
                         Thêm người dùng
@@ -469,7 +469,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                                         <!-- Actions -->
                                         <div class="flex flex-col items-end gap-1 text-[0.7rem]">
-                                            <a href="/admin/user_form.php?id=<?= (int)$u['id'] ?>"
+                                            <a href="/admin/users_form.php?id=<?= (int)$u['id'] ?>"
                                                 class="px-3 py-1 rounded-lg bg-white border border-slate-300 text-slate-600 hover:border-primary hover:text-primary-dark">
                                                 <i class="fa-solid fa-pen text-[0.65rem]"></i> Sửa
                                             </a>
