@@ -33,9 +33,8 @@ jobs:
           # Loại trừ các thư mục/file không cần upload
           exclude: |
             **/.git*
+            **/.git*/**
             **/.github/**
-            **/node_modules/**
-            **/vendor/**
-            **/tests/**
-            **/*.sql
-            **/.env
+            **/.vscode/**
+            **/.idea/**
+            **/.DS_Store
