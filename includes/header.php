@@ -113,7 +113,7 @@ if (!empty($_SESSION['user_id']) && $isAuthPage) {
                 <?php if (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
                     <a href="/admin/index.php"
                        class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-slate-300 text-slate-700 hover:border-[#7AE582] hover:text-[#7AE582] transition">
-                        <i class="fa-solid fa-gauge-high text-xs"></i> Admin
+                        <i class="fa-solid fa-gauge-high text-xs"></i> Dashboard
                     </a>
                 <?php endif; ?>
 

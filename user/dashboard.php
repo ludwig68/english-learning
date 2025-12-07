@@ -43,9 +43,7 @@ try {
                     <i class="fa-solid fa-user text-[0.7rem]" style="color:#7AE582;"></i>
                     <?= htmlspecialchars($userName) ?>
                 </span>
-                <span class="text-sm text-slate-500 font-normal">
-                    – Dashboard học viên
-                </span>
+                
             </h1>
             <p class="text-xs text-slate-500 mt-2 max-w-xl">
                 Bắt đầu với lộ trình phù hợp, ôn lại từ vựng bằng flashcard và củng cố kiến thức qua bài luyện tập.

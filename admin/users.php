@@ -1,102 +1,149 @@
 <?php
-// admin/vocab_list.php
+// admin/users.php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_admin();
 
-// Stats cho sidebar
+// ===== Stats cho sidebar =====
 $totalLevels = (int)$pdo->query("SELECT COUNT(*) FROM levels")->fetchColumn();
 $totalVocab  = (int)$pdo->query("SELECT COUNT(*) FROM vocabularies WHERE deleted_at IS NULL")->fetchColumn();
+$totalUsers  = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE deleted_at IS NULL")->fetchColumn();
 
-// Thông báo
+// ===== Thông báo =====
 $success = $_GET['success'] ?? '';
 $error   = $_GET['error'] ?? '';
 
-// Soft delete (ẩn) từ vựng
+// ===== Xử lý hành động =====
+
+// Ẩn (soft delete) người dùng
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
-    $stmt = $pdo->prepare("UPDATE vocabularies SET deleted_at = NOW() WHERE id = ? AND deleted_at IS NULL");
+
+    // Không cho xóa chính mình hoặc user admin mặc định (tuỳ bạn sửa)
+    if (isset($_SESSION['user_id']) && $id === (int)$_SESSION['user_id']) {
+        header('Location: users.php?error=Không thể ẩn tài khoản đang đăng nhập');
+        exit;
+    }
+
+    $stmt = $pdo->prepare("
+        UPDATE users 
+        SET deleted_at = NOW()
+        WHERE id = ? AND deleted_at IS NULL
+    ");
     $stmt->execute([$id]);
-    header('Location: vocab_list.php?success=Đã ẩn từ vựng khỏi danh sách');
+
+    header('Location: users.php?success=Đã ẩn tài khoản khỏi danh sách');
     exit;
 }
 
-// Restore từ vựng
+// Khôi phục người dùng
 if (isset($_GET['restore'])) {
     $id = (int)$_GET['restore'];
-    $stmt = $pdo->prepare("UPDATE vocabularies SET deleted_at = NULL WHERE id = ? AND deleted_at IS NOT NULL");
+
+    $stmt = $pdo->prepare("
+        UPDATE users
+        SET deleted_at = NULL
+        WHERE id = ? AND deleted_at IS NOT NULL
+    ");
     $stmt->execute([$id]);
-    header('Location: vocab_list.php?success=Đã khôi phục từ vựng');
+
+    header('Location: users.php?success=Đã khôi phục tài khoản');
     exit;
 }
 
-// Lấy danh sách levels cho filter
-$levelOptions = $pdo->query("SELECT id, name FROM levels ORDER BY id")->fetchAll(PDO::FETCH_ASSOC);
+// Khóa tài khoản
+if (isset($_GET['block'])) {
+    $id = (int)$_GET['block'];
 
-// Filter
-$filterLevel  = isset($_GET['level_id']) ? (int)$_GET['level_id'] : 0;
-$filterType   = trim($_GET['type'] ?? '');
-$filterStatus = $_GET['status'] ?? 'active'; // active | deleted | all
-$q            = trim($_GET['q'] ?? '');
+    if (isset($_SESSION['user_id']) && $id === (int)$_SESSION['user_id']) {
+        header('Location: users.php?error=Không thể khóa tài khoản đang đăng nhập');
+        exit;
+    }
+
+    $stmt = $pdo->prepare("
+        UPDATE users
+        SET status = 'blocked'
+        WHERE id = ? AND deleted_at IS NULL
+    ");
+    $stmt->execute([$id]);
+
+    header('Location: users.php?success=Đã khóa tài khoản');
+    exit;
+}
+
+// Mở khóa tài khoản
+if (isset($_GET['unblock'])) {
+    $id = (int)$_GET['unblock'];
+
+    $stmt = $pdo->prepare("
+        UPDATE users
+        SET status = 'active'
+        WHERE id = ? AND deleted_at IS NULL
+    ");
+    $stmt->execute([$id]);
+
+    header('Location: users.php?success=Đã mở khóa tài khoản');
+    exit;
+}
+
+// ===== Filter & Search =====
+$filterRole   = trim($_GET['role']   ?? '');        // '' | admin | user
+$filterStatus = trim($_GET['status'] ?? 'active');  // active | blocked | deleted | all
+$q            = trim($_GET['q']      ?? '');
 
 // Build query
 $where  = [];
 $params = [];
 
-// Trạng thái
+// Trạng thái + deleted_at
 if ($filterStatus === 'deleted') {
-    $where[] = "v.deleted_at IS NOT NULL";
+    $where[] = "u.deleted_at IS NOT NULL";
 } elseif ($filterStatus === 'all') {
-    // không thêm điều kiện
+    // không ràng buộc deleted_at
 } else {
-    $where[] = "v.deleted_at IS NULL";
+    // active hoặc blocked
+    $where[]  = "u.deleted_at IS NULL";
+    $where[]  = "u.status = ?";
+    $params[] = $filterStatus === 'blocked' ? 'blocked' : 'active';
 }
 
-// Level
-if ($filterLevel > 0) {
-    $where[]   = "v.level_id = ?";
-    $params[]  = $filterLevel;
+// Role
+if ($filterRole !== '') {
+    $where[]  = "u.role = ?";
+    $params[] = $filterRole;
 }
 
-// Type
-if ($filterType !== '') {
-    $where[]   = "v.type = ?";
-    $params[]  = $filterType;
-}
-
-// Search
+// Tìm kiếm
 if ($q !== '') {
-    $where[] = "(v.word LIKE ? OR v.meaning LIKE ? OR v.example_sentence LIKE ?)";
+    $where[] = "(u.username LIKE ? OR u.full_name LIKE ? OR u.email LIKE ? OR u.phone LIKE ?)";
     $kw = '%' . $q . '%';
+    $params[] = $kw;
     $params[] = $kw;
     $params[] = $kw;
     $params[] = $kw;
 }
 
 $sql = "
-    SELECT 
-        v.*,
-        l.name AS level_name
-    FROM vocabularies v
-    JOIN levels l ON v.level_id = l.id
+    SELECT u.*
+    FROM users u
 ";
 
 if ($where) {
     $sql .= " WHERE " . implode(' AND ', $where);
 }
 
-$sql .= " ORDER BY v.level_id, v.id DESC LIMIT 200";
+$sql .= " ORDER BY u.created_at DESC, u.id DESC LIMIT 200";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
-$vocabs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
 
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý Từ vựng | English Learning</title>
+    <title>Quản lý Người dùng | English Learning</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Tailwind CDN -->
@@ -136,10 +183,9 @@ $vocabs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body class="bg-slate-50">
-
     <div class="h-screen flex overflow-hidden">
 
-        <!-- SIDEBAR (giống index/levels) -->
+        <!-- SIDEBAR -->
         <aside class="w-64 bg-white border-r border-slate-200 flex flex-col fixed inset-y-0 left-0">
             <!-- Logo -->
             <div class="flex items-center gap-2 px-5 py-4 border-b border-slate-100">
@@ -174,8 +220,8 @@ $vocabs = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <p class="text-[0.65rem]">Levels</p>
                     </div>
                     <div class="rounded-xl bg-primary/20 text-emerald-900 py-2">
-                        <p class="font-semibold mb-0.5"><?= $totalVocab ?></p>
-                        <p class="text-[0.65rem]">Từ vựng</p>
+                        <p class="font-semibold mb-0.5"><?= $totalUsers ?></p>
+                        <p class="text-[0.65rem]">Người dùng</p>
                     </div>
                 </div>
             </div>
@@ -199,13 +245,13 @@ $vocabs = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </a>
 
                 <a href="/admin/vocab_list.php"
-                    class="flex items-center gap-2 px-3 py-2 rounded-2xl bg-primary text-emerald-950 font-semibold mb-1">
+                    class="flex items-center gap-2 px-3 py-2 rounded-2xl text-slate-600 hover:bg-slate-100 mb-1">
                     <i class="fa-solid fa-book-open text-xs"></i>
                     <span>Quản lý Từ vựng</span>
                 </a>
 
                 <a href="/admin/users.php"
-                    class="flex items-center gap-2 px-3 py-2 rounded-2xl text-slate-600 hover:bg-slate-100 mb-1">
+                    class="flex items-center gap-2 px-3 py-2 rounded-2xl bg-primary text-emerald-950 font-semibold mb-1">
                     <i class="fa-solid fa-users text-xs"></i>
                     <span>Người dùng</span>
                 </a>
@@ -236,17 +282,25 @@ $vocabs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <!-- Top bar -->
             <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8">
                 <div>
-                    <h1 class="text-lg font-semibold text-slate-900">Quản lý Từ vựng</h1>
+                    <h1 class="text-lg font-semibold text-slate-900">Quản lý Người dùng</h1>
                     <p class="text-[0.75rem] text-slate-400 mt-0.5">
-                        Lọc, tìm kiếm và cập nhật danh sách từ vựng theo từng Level.
+                        Tìm kiếm, lọc theo vai trò, trạng thái và quản lý tài khoản hệ thống.
                     </p>
                 </div>
                 <div class="hidden sm:flex items-center gap-3 text-xs">
-                    <a href="/admin/vocab_form.php"
+                    <!-- Nút thêm người dùng -->
+                    <a href="/admin/user_form.php"
                         class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-emerald-950 font-semibold hover:bg-primary-dark hover:text-emerald-50">
-                        <i class="fa-solid fa-plus text-[0.75rem]"></i> Thêm từ mới
+                        <i class="fa-solid fa-user-plus text-[0.75rem]"></i>
+                        Thêm người dùng
                     </a>
+
+                    <!-- Badge tổng số tài khoản -->
+                    <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-500">
+                        Tổng: <?= $totalUsers ?> tài khoản
+                    </span>
                 </div>
+
             </header>
 
             <!-- Content -->
@@ -268,13 +322,13 @@ $vocabs = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                     <?php endif; ?>
 
-                    <!-- Filter + search -->
+                    <!-- Bộ lọc -->
                     <div class="bg-white rounded-3xl border border-slate-200 p-4 mb-4">
                         <form method="get" class="flex flex-wrap gap-4 items-end">
 
                             <!-- Tìm kiếm -->
                             <div class="w-80 min-w-[230px]">
-                                <label class="text-[0.9rem] text-slate-500 mb-1 block">Tìm kiếm</label>
+                                <label class="text-[0.75rem] text-slate-500 mb-1 block">Tìm kiếm</label>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-3 flex items-center text-slate-300 text-xs">
                                         <i class="fa-solid fa-magnifying-glass"></i>
@@ -283,57 +337,41 @@ $vocabs = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         type="text"
                                         name="q"
                                         value="<?= htmlspecialchars($q) ?>"
-                                        placeholder="Từ vựng, nghĩa, câu ví dụ..."
+                                        placeholder="Username, họ tên, email, số điện thoại..."
                                         class="w-full h-8 pl-8 pr-3 rounded-2xl border border-slate-200 bg-slate-50 text-[0.75rem] placeholder:text-slate-400 focus:bg-white">
                                 </div>
                             </div>
 
-
-                            <!-- Level -->
+                            <!-- Role -->
                             <div class="w-40">
-                                <label class="text-[0.9rem] text-slate-500 mb-1 block">Level</label>
-                                <select name="level_id"
-                                    class="w-full h-8 rounded-2xl border border-slate-200 bg-white text-[0.7rem] px-3 leading-tight">
-                                    <option value="0">Tất cả</option>
-                                    <?php foreach ($levelOptions as $lv): ?>
-                                        <option value="<?= (int)$lv['id'] ?>"
-                                            <?= $filterLevel === (int)$lv['id'] ? 'selected' : '' ?>>
-                                            #<?= (int)$lv['id'] ?> - <?= htmlspecialchars($lv['name']) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-
-                            <!-- Loại -->
-                            <div class="w-40">
-                                <label class="text-[0.9rem] text-slate-500 mb-1 block">Loại</label>
-                                <select name="type"
+                                <label class="text-[0.75rem] text-slate-500 mb-1 block">Vai trò</label>
+                                <select name="role"
                                     class="w-full h-8 rounded-2xl border border-slate-200 bg-white text-[0.7rem] px-3 leading-tight">
                                     <option value="">Tất cả</option>
-                                    <option value="flashcard" <?= $filterType === 'flashcard' ? 'selected' : '' ?>>Flashcard</option>
-                                    <option value="fill_gap" <?= $filterType === 'fill_gap'   ? 'selected' : '' ?>>Fill Gap</option>
-                                    <option value="mixed" <?= $filterType === 'mixed'      ? 'selected' : '' ?>>Mixed</option>
+                                    <option value="admin" <?= $filterRole === 'admin' ? 'selected' : '' ?>>Admin</option>
+                                    <option value="user" <?= $filterRole === 'user'  ? 'selected' : '' ?>>User</option>
                                 </select>
                             </div>
 
                             <!-- Trạng thái -->
                             <div class="w-40">
-                                <label class="text-[0.9rem] text-slate-500 mb-1 block">Trạng thái</label>
+                                <label class="text-[0.75rem] text-slate-500 mb-1 block">Trạng thái</label>
                                 <select name="status"
                                     class="w-full h-8 rounded-2xl border border-slate-200 bg-white text-[0.7rem] px-3 leading-tight">
-                                    <option value="active" <?= $filterStatus === 'active'  ? 'selected' : '' ?>>Đang dùng</option>
+                                    <option value="active" <?= $filterStatus === 'active'  ? 'selected' : '' ?>>Đang hoạt động</option>
+                                    <option value="blocked" <?= $filterStatus === 'blocked' ? 'selected' : '' ?>>Bị khóa</option>
                                     <option value="deleted" <?= $filterStatus === 'deleted' ? 'selected' : '' ?>>Đã ẩn</option>
                                     <option value="all" <?= $filterStatus === 'all'     ? 'selected' : '' ?>>Tất cả</option>
                                 </select>
                             </div>
 
-                            <!-- Nút Lọc / Reset -->
+                            <!-- Nút -->
                             <div class="ml-auto flex items-end gap-2">
                                 <button type="submit"
                                     class="inline-flex items-center gap-1 px-3 py-1.5 rounded-2xl bg-primary text-emerald-950 text-[0.75rem] font-semibold hover:bg-primary-dark hover:text-emerald-50">
                                     <i class="fa-solid fa-filter text-[0.7rem]"></i> Lọc
                                 </button>
-                                <a href="/admin/vocab_list.php"
+                                <a href="/admin/users.php"
                                     class="inline-flex items-center gap-1 px-3 py-1.5 rounded-2xl bg-slate-100 text-slate-600 text-[0.75rem] hover:bg-slate-200">
                                     <i class="fa-solid fa-rotate-left text-[0.7rem]"></i> Reset
                                 </a>
@@ -342,90 +380,123 @@ $vocabs = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </form>
                     </div>
 
-
-
-                    <!-- List -->
+                    <!-- Danh sách users -->
                     <div class="bg-white rounded-3xl border border-slate-200 p-4 sm:p-5">
                         <div class="flex items-center justify-between mb-3">
                             <h2 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
                                 <span class="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center">
-                                    <i class="fa-solid fa-book-open text-[0.75rem] text-primary-dark"></i>
+                                    <i class="fa-solid fa-users text-[0.75rem] text-primary-dark"></i>
                                 </span>
-                                Danh sách từ vựng
+                                Danh sách người dùng
                             </h2>
                             <span class="text-[0.7rem] text-slate-400">
-                                Hiển thị tối đa 200 bản ghi (<?= count($vocabs) ?> kết quả)
+                                Hiển thị tối đa 200 bản ghi (<?= count($users) ?> kết quả)
                             </span>
                         </div>
 
-                        <?php if ($vocabs): ?>
+                        <?php if ($users): ?>
                             <div class="space-y-2">
-                                <?php foreach ($vocabs as $v): ?>
+                                <?php foreach ($users as $u): ?>
                                     <?php
-                                    $isDeleted = !empty($v['deleted_at']);
-                                    $type = $v['type'];
-                                    $typeLabel = $type;
-                                    if ($type === 'flashcard') $typeLabel = 'Flashcard';
-                                    elseif ($type === 'fill_gap') $typeLabel = 'Fill Gap';
-                                    elseif ($type === 'mixed') $typeLabel = 'Mixed';
+                                    $isDeleted = !empty($u['deleted_at']);
+                                    $isBlocked = ($u['status'] === 'blocked');
+                                    $role      = $u['role'];
+                                    $roleLabel = $role === 'admin' ? 'Admin' : 'User';
+                                    $created   = $u['created_at'] ? date('d/m/Y H:i', strtotime($u['created_at'])) : '';
                                     ?>
                                     <div class="flex items-start gap-3 rounded-2xl px-3 sm:px-4 py-3
                                     <?= $isDeleted ? 'bg-red-50 border border-red-100' : 'bg-slate-50' ?>">
+
+                                        <!-- Avatar -->
+                                        <div class="flex-shrink-0">
+                                            <?php if (!empty($u['avatar'])): ?>
+                                                <img src="/<?= htmlspecialchars($u['avatar']) ?>"
+                                                    alt=""
+                                                    class="w-10 h-10 rounded-full object-cover border border-slate-200">
+                                            <?php else: ?>
+                                                <div class="w-10 h-10 rounded-full bg-primary/80 flex items-center justify-center text-xs font-semibold text-emerald-950">
+                                                    <?= strtoupper(substr($u['username'], 0, 1)) ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+
+                                        <!-- Info -->
                                         <div class="flex-1">
                                             <div class="flex flex-wrap items-center gap-2 mb-1">
                                                 <p class="text-sm font-medium text-slate-900">
-                                                    <?= htmlspecialchars($v['word']) ?>
+                                                    <?= htmlspecialchars($u['full_name'] ?: $u['username']) ?>
                                                 </p>
                                                 <span class="px-2 py-0.5 rounded-full bg-white border border-slate-200 text-[0.65rem] text-slate-500">
-                                                    Level #<?= (int)$v['level_id'] ?> · <?= htmlspecialchars($v['level_name']) ?>
+                                                    @<?= htmlspecialchars($u['username']) ?>
                                                 </span>
-                                                <span class="px-2 py-0.5 rounded-full text-[0.65rem] 
-                                                <?= $type === 'flashcard' ? 'bg-primary text-emerald-950' : ($type === 'fill_gap' ? 'bg-sky-100 text-sky-700' : 'bg-amber-100 text-amber-700') ?>">
-                                                    <?= $typeLabel ?>
+                                                <span class="px-2 py-0.5 rounded-full text-[0.65rem]
+                                                <?= $role === 'admin' ? 'bg-amber-100 text-amber-700' : 'bg-sky-100 text-sky-700' ?>">
+                                                    <?= $roleLabel ?>
                                                 </span>
+                                                <?php if ($isBlocked && !$isDeleted): ?>
+                                                    <span class="px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 text-[0.65rem]">
+                                                        Đang bị khóa
+                                                    </span>
+                                                <?php endif; ?>
                                                 <?php if ($isDeleted): ?>
                                                     <span class="px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-[0.65rem]">
                                                         Đã ẩn
                                                     </span>
                                                 <?php endif; ?>
                                             </div>
-                                            <p class="text-[0.75rem] text-slate-600">
-                                                <span class="font-semibold text-slate-700">Nghĩa:</span>
-                                                <?= htmlspecialchars($v['meaning']) ?>
-                                            </p>
-                                            <?php if (!empty($v['example_sentence'])): ?>
-                                                <p class="text-[0.7rem] text-slate-500 mt-1">
-                                                    <span class="font-semibold text-slate-600">Ví dụ:</span>
-                                                    <?= htmlspecialchars($v['example_sentence']) ?>
-                                                </p>
-                                            <?php endif; ?>
 
-                                            <div class="flex flex-wrap gap-2 mt-2 text-[0.65rem] text-slate-500">
-                                                <span class="inline-flex items-center gap-1">
-                                                    <i class="fa-solid fa-image text-[0.65rem]"></i>
-                                                    <?= $v['image_url'] ? 'Có hình' : 'Không hình' ?>
-                                                </span>
-                                                <span class="inline-flex items-center gap-1">
-                                                    <i class="fa-solid fa-volume-high text-[0.65rem]"></i>
-                                                    <?= $v['audio_url'] ? 'Có audio' : 'Không audio' ?>
-                                                </span>
+                                            <div class="text-[0.75rem] text-slate-600 space-y-0.5">
+                                                <?php if (!empty($u['email'])): ?>
+                                                    <p>
+                                                        <i class="fa-solid fa-envelope text-[0.7rem] mr-1 text-slate-400"></i>
+                                                        <?= htmlspecialchars($u['email']) ?>
+                                                    </p>
+                                                <?php endif; ?>
+                                                <?php if (!empty($u['phone'])): ?>
+                                                    <p>
+                                                        <i class="fa-solid fa-phone text-[0.7rem] mr-1 text-slate-400"></i>
+                                                        <?= htmlspecialchars($u['phone']) ?>
+                                                    </p>
+                                                <?php endif; ?>
+                                                <?php if ($created): ?>
+                                                    <p class="text-[0.7rem] text-slate-400">
+                                                        <i class="fa-solid fa-clock text-[0.7rem] mr-1"></i>
+                                                        Tạo lúc <?= $created ?>
+                                                    </p>
+                                                <?php endif; ?>
                                             </div>
                                         </div>
+
+                                        <!-- Actions -->
                                         <div class="flex flex-col items-end gap-1 text-[0.7rem]">
-                                            <a href="/admin/vocab_form.php?id=<?= (int)$v['id'] ?>"
+                                            <a href="/admin/user_form.php?id=<?= (int)$u['id'] ?>"
                                                 class="px-3 py-1 rounded-lg bg-white border border-slate-300 text-slate-600 hover:border-primary hover:text-primary-dark">
                                                 <i class="fa-solid fa-pen text-[0.65rem]"></i> Sửa
                                             </a>
-                                            <?php if ($isDeleted): ?>
-                                                <a href="/admin/vocab_list.php?restore=<?= (int)$v['id'] ?>"
-                                                    class="px-3 py-1 rounded-lg bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
-                                                    <i class="fa-solid fa-rotate-left text-[0.65rem]"></i> Khôi phục
+
+                                            <?php if (!$isDeleted): ?>
+                                                <?php if ($isBlocked): ?>
+                                                    <a href="/admin/users.php?unblock=<?= (int)$u['id'] ?>"
+                                                        class="px-3 py-1 rounded-lg bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
+                                                        <i class="fa-solid fa-lock-open text-[0.65rem]"></i> Mở khóa
+                                                    </a>
+                                                <?php else: ?>
+                                                    <a href="/admin/users.php?block=<?= (int)$u['id'] ?>"
+                                                        onclick="return confirm('Khóa tài khoản này? Người dùng sẽ không đăng nhập được.');"
+                                                        class="px-3 py-1 rounded-lg bg-white border border-orange-200 text-orange-600 hover:bg-orange-50">
+                                                        <i class="fa-solid fa-lock text-[0.65rem]"></i> Khóa
+                                                    </a>
+                                                <?php endif; ?>
+
+                                                <a href="/admin/users.php?delete=<?= (int)$u['id'] ?>"
+                                                    onclick="return confirm('Ẩn tài khoản này? Người dùng sẽ không xuất hiện trong danh sách mặc định.');"
+                                                    class="px-3 py-1 rounded-lg bg-white border border-red-200 text-red-500 hover:bg-red-50">
+                                                    <i class="fa-solid fa-user-slash text-[0.65rem]"></i> Ẩn
                                                 </a>
                                             <?php else: ?>
-                                                <a href="/admin/vocab_list.php?delete=<?= (int)$v['id'] ?>"
-                                                    onclick="return confirm('Ẩn từ vựng này? Người học sẽ không thấy nữa.');"
-                                                    class="px-3 py-1 rounded-lg bg-white border border-red-200 text-red-500 hover:bg-red-50">
-                                                    <i class="fa-solid fa-eye-slash text-[0.65rem]"></i> Ẩn
+                                                <a href="/admin/users.php?restore=<?= (int)$u['id'] ?>"
+                                                    class="px-3 py-1 rounded-lg bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
+                                                    <i class="fa-solid fa-rotate-left text-[0.65rem]"></i> Khôi phục
                                                 </a>
                                             <?php endif; ?>
                                         </div>
@@ -434,7 +505,7 @@ $vocabs = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </div>
                         <?php else: ?>
                             <p class="text-[0.75rem] text-slate-500">
-                                Không tìm thấy từ vựng nào khớp với bộ lọc hiện tại.
+                                Không tìm thấy tài khoản nào khớp với bộ lọc hiện tại.
                             </p>
                         <?php endif; ?>
                     </div>
@@ -443,7 +514,6 @@ $vocabs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </section>
         </main>
     </div>
-
 </body>
 
 </html>

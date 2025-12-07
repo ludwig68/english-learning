@@ -40,11 +40,11 @@
             <ul class="space-y-1">
                 <li class="flex items-start gap-2">
                     <i class="fa-solid fa-envelope mt-[2px] text-slate-400"></i>
-                    <span>support@english-learning.test</span>
+                    <span>zayluon@gmail.com</span>
                 </li>
                 <li class="flex items-start gap-2">
                     <i class="fa-solid fa-phone mt-[2px] text-slate-400"></i>
-                    <span>+84 123 456 789</span>
+                    <span>+84 364 132 169</span>
                 </li>
                 <li class="flex items-start gap-2">
                     <i class="fa-solid fa-location-dot mt-[2px] text-slate-400"></i>
@@ -64,7 +64,7 @@
             <h3 class="text-[0.8rem] font-semibold text-slate-800 mb-2">Bản đồ</h3>
             <div class="h-32 sm:h-40 rounded-lg overflow-hidden border border-slate-200">
                 <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4510990344718!2d106.700423!3d10.775658!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f3f1d9c9e7f%3A0x42b1e0!2zSG_DoGNoIENo4bq_IENpdHkgQ2VudGVyLCBIQ00!5e0!3m2!1svi!2svn!4v1700000000000!5m2!1svi!2s"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.9616486333266!2d106.67510897589445!3d10.737439289408972!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f62a90e5dbd%3A0x674d5126513db295!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBDw7RuZyBuZ2jhu4cgU8OgaSBHw7Ju!5e0!3m2!1svi!2s!4v1765099328419!5m2!1svi!2s"
                     width="100%"
                     height="100%"
                     style="border:0;"
@@ -79,7 +79,7 @@
     <div class="border-t border-slate-100">
         <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-2">
             <p class="text-[0.7rem] text-slate-400">
-                &copy; <?= date('Y') ?> English Learning System. Built with PHP &amp; Tailwind CSS.
+                &copy; <?= date('Y') ?> English Learning System. Built with Ludwig.
             </p>
             <p class="text-[0.7rem] text-slate-400">
                 <i class="fa-solid fa-heart text-[#7AE582] mr-1"></i>

@@ -6,10 +6,18 @@ require_once __DIR__ . '/../includes/header.php';
 
 $level_id = isset($_GET['level_id']) ? (int)$_GET['level_id'] : 0;
 if ($level_id <= 0) {
-    echo '<p class="text-sm text-red-600">Level không hợp lệ.</p>';
+    echo '<div class="flex items-center justify-between mb-4">';
+    echo '    <p class="text-sm text-red-600">Level không hợp lệ.</p>';
+    echo '    <a href="/user/dashboard.php" class="text-xs text-slate-500 hover:text-[#16a34a]">';
+    echo '        <i class="fa-solid fa-arrow-left mr-1"></i> Quay lại ';
+    echo '    </a>';
+    echo '</div>';
+
+    $hideFooter = true;
     require_once __DIR__ . '/../includes/footer.php';
     exit;
 }
+
 
 $stmt = $pdo->prepare("
     SELECT v.*, l.name AS level_name
@@ -40,7 +48,7 @@ $level_name = $vocabList[0]['level_name'];
         </p>
     </div>
     <a href="/user/learn.php?level_id=<?= $level_id ?>"
-       class="text-xs text-slate-500 hover:text-[#16a34a]">
+        class="text-xs text-slate-500 hover:text-[#16a34a]">
         <i class="fa-solid fa-arrow-left mr-1"></i> Quay lại
     </a>
 </div>
@@ -59,7 +67,7 @@ $level_name = $vocabList[0]['level_name'];
                             <?php if (!empty($v['audio_url'])): ?>
                                 <button
                                     class="px-3 py-1 rounded-full bg-white border border-slate-300 text-[0.7rem] flex items-center gap-2 hover:border-[#7AE582]"
-                                    onclick="event.stopPropagation(); new Audio('/<?= htmlspecialchars($v['audio_url']) ?>').play();">
+                                    onclick="event.stopPropagation(); new Audio('<?= htmlspecialchars($v['audio_url']) ?>').play();">
                                     <i class="fa-solid fa-volume-high"></i> Nghe
                                 </button>
                             <?php endif; ?>
@@ -70,6 +78,8 @@ $level_name = $vocabList[0]['level_name'];
                     </div>
                 </div>
 
+
+                <!-- BACK -->
                 <!-- BACK -->
                 <div class="flashcard-face flashcard-back">
                     <div class="text-sm font-semibold mb-1">
@@ -77,8 +87,8 @@ $level_name = $vocabList[0]['level_name'];
                     </div>
 
                     <?php if (!empty($v['image_url'])): ?>
-                        <img src="/<?= htmlspecialchars($v['image_url']) ?>"
-                             alt="" class="mt-2 max-h-24 rounded-md object-contain">
+                        <img src="<?= htmlspecialchars($v['image_url']) ?>"
+                            alt="" class="mt-2 max-h-24 rounded-md object-contain">
                     <?php endif; ?>
 
                     <?php if (!empty($v['example_sentence'])): ?>
@@ -91,5 +101,34 @@ $level_name = $vocabList[0]['level_name'];
         </div>
     <?php endforeach; ?>
 </div>
+<script>
+async function saveFlashcardSession() {
+    const formData = new FormData();
+    formData.append('level_id',        currentLevelId);
+    formData.append('mode',            'flashcard');
+    formData.append('vocab_count',     viewedCount);   // số từ đã xem
+    formData.append('correct_count',   viewedCount);   // hoặc 0 nếu không muốn tính
+    formData.append('total_questions', viewedCount);
+    formData.append('note',            'Luyện flashcard');
+    formData.append('questions',       '[]');          // không lưu chi tiết
 
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+    try {
+        const res = await fetch('/user/save_history.php', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        console.log(data);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+// Gọi khi người dùng bấm "Hoàn thành buổi học" hoặc khi xem hết flashcard
+document.getElementById('btnFinishFlashcard').addEventListener('click', saveFlashcardSession);
+</script>
+
+<?php
+$hideFooter = true;
+require_once __DIR__ . '/../includes/footer.php';
+?>

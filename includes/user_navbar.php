@@ -24,17 +24,5 @@ function user_nav_class($file, $current) {
             <i class="fa-solid fa-route text-[0.7rem]"></i>
             Học theo Level
         </a>
-
-        <a href="/user/flashcard.php"
-           class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-slate-200 <?= user_nav_class('flashcard.php', $current) ?>">
-            <i class="fa-regular fa-clone text-[0.7rem]"></i>
-            Flashcard
-        </a>
-
-        <a href="/user/practice.php"
-           class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-slate-200 <?= user_nav_class('practice.php', $current) ?>">
-            <i class="fa-solid fa-clipboard-question text-[0.7rem]"></i>
-            Practice
-        </a>
     </div>
 </div>

@@ -1,109 +1,220 @@
-// Dữ liệu mẫu cho bảng levels
-INSERT INTO levels (name, description) VALUES 
-('Pre-Starter', 'Dành cho người mới bắt đầu hoàn toàn, làm quen với bảng chữ cái và phát âm cơ bản.'),
-('Starters', 'Tiếng Anh thiếu nhi cấp độ 1: Từ vựng về màu sắc, con vật, gia đình và chào hỏi đơn giản.'),
-('Movers', 'Tiếng Anh thiếu nhi cấp độ 2: Xây dựng câu đơn giản, nghe hiểu hội thoại ngắn hàng ngày.'),
-('Flyers', 'Tiếng Anh thiếu nhi cấp độ 3: Đọc hiểu văn bản ngắn, viết đoạn văn miêu tả cơ bản.'),
-('KET (A2)', 'Trình độ sơ cấp: Có thể giao tiếp trong các tình huống quen thuộc và đơn giản.'),
-('PET (B1)', 'Trình độ trung cấp: Sử dụng tiếng Anh độc lập trong công việc, học tập và du lịch.'),
-('IELTS 0 - 3.0', 'Xây dựng nền tảng: Lấy lại gốc ngữ pháp và từ vựng cho người mất căn bản.'),
-('IELTS 3.0 - 5.0', 'Pre-IELTS: Làm quen với các dạng bài thi và củng cố 4 kỹ năng Nghe-Nói-Đọc-Viết.'),
-('IELTS 5.0 - 6.5', 'IELTS Master: Luyện đề chuyên sâu và nâng cao kỹ năng tư duy phản biện.'),
-('Giao tiếp căn bản', 'Luyện phản xạ nghe nói cho người đi làm, tập trung vào các chủ đề văn phòng.');
+-- ==============================================================
+-- 1. LÀM SẠCH DỮ LIỆU CŨ (RESET ID)
+-- ==============================================================
+SET FOREIGN_KEY_CHECKS = 0; 
+TRUNCATE TABLE vocabularies;
+SET FOREIGN_KEY_CHECKS = 1;
 
-// Dữ liệu mẫu cho bảng vocabularies
-INSERT INTO vocabularies (level_id, word, meaning, type, example_sentence, image_url) VALUES 
+-- ==============================================================
+-- 2. INSERT 200 TỪ VỰNG (CHIA THEO LEVEL)
+-- IMAGE SOURCE: LoremFlickr (Ảnh thật, tự động theo từ khóa)
+-- AUDIO SOURCE: Google Dictionary (Chuẩn Anh-Anh)
+-- ==============================================================
 
--- =============================================
--- LEVEL 1: PRE-STARTER (Từ vựng cơ bản nhất)
--- =============================================
-(1, 'Sun', 'Mặt trời', 'flashcard', 'The sun rises in the east.', 'uploads/sun.png'),
-(1, 'Moon', 'Mặt trăng', 'flashcard', 'The moon is beautiful tonight.', 'uploads/moon.png'),
-(1, 'Star', 'Ngôi sao', 'flashcard', 'Look at that bright star.', NULL),
-(1, 'Water', 'Nước', 'mixed', 'I drink water every day.', 'uploads/water.jpg'),
-(1, 'Bread', 'Bánh mì', 'fill_gap', 'I eat bread for breakfast.', NULL),
-(1, 'Milk', 'Sữa', 'flashcard', 'Baby likes to drink milk.', NULL),
-(1, 'Book', 'Quyển sách', 'mixed', 'Open your book, please.', NULL),
-(1, 'Pen', 'Cái bút', 'fill_gap', 'Can I borrow your pen?', NULL),
-(1, 'School', 'Trường học', 'flashcard', 'I go to school by bus.', NULL),
-(1, 'Teacher', 'Giáo viên', 'mixed', 'My teacher is very kind.', NULL),
-(1, 'Cat', 'Con mèo', 'uploads/cat.png', NULL, 'flashcard', 'The cat is sleeping.'),
-(1, 'Dog', 'Con chó', NULL, NULL, 'fill_gap', 'The ___ barks loudly.'), 
-(1, 'Apple', 'Quả táo', NULL, NULL, 'mixed', 'I like to eat an apple every day.'),
-(1, 'Ball', 'Quả bóng', NULL, NULL, 'flashcard', 'He plays with a ball.'),
-(1, 'Car', 'Xe hơi', NULL, NULL, 'fill_gap', 'My father drives a ___.'),
-(1, 'House', 'Ngôi nhà', NULL, NULL, 'mixed', 'They live in a big house.'),
-(1, 'Tree', 'Cây xanh', NULL, NULL, 'flashcard', 'The tree is tall.'),
-(1, 'Chair', 'Cái ghế', NULL, NULL, 'fill_gap', 'Please sit on the ___.'),
-(1, 'Table', 'Cái bàn', NULL, NULL, 'mixed', 'The book is on the table.'),
-(1, 'Fish', 'Con cá', NULL, NULL, 'flashcard', 'I have a pet fish.'),
+INSERT INTO vocabularies (level_id, word, meaning, type, example_sentence, image_url, audio_url) VALUES 
 
--- =============================================
--- LEVEL 2: STARTERS (Màu sắc, cảm xúc, gia đình)
--- =============================================
-(2, 'Happy', 'Vui vẻ / Hạnh phúc', 'flashcard', 'She looks very happy.', 'uploads/happy.png'),
-(2, 'Sad', 'Buồn bã', 'fill_gap', 'Why are you so ___ today?', NULL), -- Key: sad
-(2, 'Angry', 'Tức giận', 'mixed', 'Don\'t be angry with me.', NULL),
-(2, 'Green', 'Màu xanh lá', 'flashcard', 'The grass is green.', NULL),
-(2, 'Yellow', 'Màu vàng', 'flashcard', 'Bananas are yellow.', NULL),
-(2, 'Red', 'Màu đỏ', 'mixed', 'She is wearing a red dress.', NULL),
-(2, 'Brother', 'Anh/Em trai', 'fill_gap', 'My ___ is taller than me.', NULL), -- Key: brother
-(2, 'Sister', 'Chị/Em gái', 'mixed', 'I have two sisters.', NULL),
-(2, 'Grandmother', 'Bà', 'flashcard', 'My grandmother is 80 years old.', NULL),
-(2, 'Family', 'Gia đình', 'fill_gap', 'I love my ___ very much.', NULL), -- Key: family
-(2, 'Blue', 'Màu xanh dương', NULL, NULL, 'flashcard', 'The sky is blue.'),
-(2, 'Mother', 'Mẹ', 'uploads/mother.png', NULL, 'fill_gap', 'My ___ cooks very well.'), -- Từ cần điền là Mother
-(2, 'Father', 'Bố', NULL, NULL, 'mixed', 'I play football with my father.'),
+-- -----------------------------------------------------------
+-- LEVEL 1: PRE-STARTER (ANIMALS, FOOD, COLORS - 50 TỪ)
+-- -----------------------------------------------------------
+(1, 'Dog', 'Con chó', 'flashcard', 'The dog is barking.', 'https://loremflickr.com/400/300/dog', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/dog--_gb_1.mp3'),
+(1, 'Cat', 'Con mèo', 'flashcard', 'The cat loves milk.', 'https://loremflickr.com/400/300/cat', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/cat--_gb_1.mp3'),
+(1, 'Bird', 'Con chim', 'mixed', 'The bird is flying high.', 'https://loremflickr.com/400/300/bird', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/bird--_gb_1.mp3'),
+(1, 'Fish', 'Con cá', 'flashcard', 'Fish swim in the water.', 'https://loremflickr.com/400/300/fish', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/fish--_gb_1.mp3'),
+(1, 'Lion', 'Sư tử', 'fill_gap', 'The ___ is the king of the jungle.', 'https://loremflickr.com/400/300/lion', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/lion--_gb_1.mp3'),
+(1, 'Tiger', 'Con hổ', 'mixed', 'Tigers have stripes.', 'https://loremflickr.com/400/300/tiger', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/tiger--_gb_1.mp3'),
+(1, 'Monkey', 'Con khỉ', 'flashcard', 'The monkey eats a banana.', 'https://loremflickr.com/400/300/monkey', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/monkey--_gb_1.mp3'),
+(1, 'Elephant', 'Con voi', 'fill_gap', 'The ___ has a long nose.', 'https://loremflickr.com/400/300/elephant', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/elephant--_gb_1.mp3'),
+(1, 'Zebra', 'Ngựa vằn', 'flashcard', 'A zebra is black and white.', 'https://loremflickr.com/400/300/zebra', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/zebra--_gb_1.mp3'),
+(1, 'Rabbit', 'Con thỏ', 'mixed', 'Rabbits can jump fast.', 'https://loremflickr.com/400/300/rabbit', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/rabbit--_gb_1.mp3'),
+(1, 'Apple', 'Quả táo', 'flashcard', 'An apple a day keeps the doctor away.', 'https://loremflickr.com/400/300/apple', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/apple--_gb_1.mp3'),
+(1, 'Banana', 'Quả chuối', 'flashcard', 'Monkeys love to eat a banana.', 'https://loremflickr.com/400/300/banana', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/banana--_gb_1.mp3'),
+(1, 'Orange', 'Quả cam', 'mixed', 'I want an orange juice.', 'https://loremflickr.com/400/300/orange', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/orange--_gb_1.mp3'),
+(1, 'Grape', 'Quả nho', 'fill_gap', 'This ___ is very sweet.', 'https://loremflickr.com/400/300/grape', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/grape--_gb_1.mp3'),
+(1, 'Lemon', 'Quả chanh vàng', 'flashcard', 'Lemons are sour.', 'https://loremflickr.com/400/300/lemon', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/lemon--_gb_1.mp3'),
+(1, 'Melon', 'Dưa lưới', 'mixed', 'Watermelon is a type of melon.', 'https://loremflickr.com/400/300/melon', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/melon--_gb_1.mp3'),
+(1, 'Strawberry', 'Dâu tây', 'flashcard', 'I like strawberry ice cream.', 'https://loremflickr.com/400/300/strawberry', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/strawberry--_gb_1.mp3'),
+(1, 'Bread', 'Bánh mì', 'fill_gap', 'I eat ___ for breakfast.', 'https://loremflickr.com/400/300/bread', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/bread--_gb_1.mp3'),
+(1, 'Rice', 'Cơm / Gạo', 'mixed', 'Asians eat a lot of rice.', 'https://loremflickr.com/400/300/rice', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/rice--_gb_1.mp3'),
+(1, 'Meat', 'Thịt', 'flashcard', 'I like to eat meat.', 'https://loremflickr.com/400/300/meat', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/meat--_gb_1.mp3'),
+(1, 'Chicken', 'Thịt gà / Con gà', 'flashcard', 'Fried chicken is delicious.', 'https://loremflickr.com/400/300/chicken', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/chicken--_gb_1.mp3'),
+(1, 'Egg', 'Quả trứng', 'fill_gap', 'I boil an ___ every morning.', 'https://loremflickr.com/400/300/egg', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/egg--_gb_1.mp3'),
+(1, 'Milk', 'Sữa', 'mixed', 'Cats like milk.', 'https://loremflickr.com/400/300/milk', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/milk--_gb_1.mp3'),
+(1, 'Water', 'Nước', 'flashcard', 'Please give me some water.', 'https://loremflickr.com/400/300/water', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/water--_gb_1.mp3'),
+(1, 'Coffee', 'Cà phê', 'flashcard', 'My dad drinks coffee.', 'https://loremflickr.com/400/300/coffee', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/coffee--_gb_1.mp3'),
+(1, 'Tea', 'Trà', 'fill_gap', 'Would you like some ___?', 'https://loremflickr.com/400/300/tea', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/tea--_gb_1.mp3'),
+(1, 'Juice', 'Nước ép', 'mixed', 'Orange juice is healthy.', 'https://loremflickr.com/400/300/juice', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/juice--_gb_1.mp3'),
+(1, 'Cake', 'Bánh ngọt', 'flashcard', 'Happy birthday cake.', 'https://loremflickr.com/400/300/cake', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/cake--_gb_1.mp3'),
+(1, 'Red', 'Màu đỏ', 'flashcard', 'The apple is red.', 'https://loremflickr.com/400/300/red', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/red--_gb_1.mp3'),
+(1, 'Blue', 'Màu xanh dương', 'fill_gap', 'The sky is ___.', 'https://loremflickr.com/400/300/blue', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/blue--_gb_1.mp3'),
+(1, 'Green', 'Màu xanh lá', 'mixed', 'The grass is green.', 'https://loremflickr.com/400/300/green', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/green--_gb_1.mp3'),
+(1, 'Yellow', 'Màu vàng', 'flashcard', 'The sun is yellow.', 'https://loremflickr.com/400/300/yellow', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/yellow--_gb_1.mp3'),
+(1, 'Black', 'Màu đen', 'flashcard', 'My hair is black.', 'https://loremflickr.com/400/300/black', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/black--_gb_1.mp3'),
+(1, 'White', 'Màu trắng', 'fill_gap', 'Snow is ___.', 'https://loremflickr.com/400/300/white', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/white--_gb_1.mp3'),
+(1, 'Pink', 'Màu hồng', 'mixed', 'She likes pink flowers.', 'https://loremflickr.com/400/300/pink', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/pink--_gb_1.mp3'),
+(1, 'Table', 'Cái bàn', 'flashcard', 'The book is on the table.', 'https://loremflickr.com/400/300/table', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/table--_gb_1.mp3'),
+(1, 'Chair', 'Cái ghế', 'fill_gap', 'Sit on the ___.', 'https://loremflickr.com/400/300/chair', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/chair--_gb_1.mp3'),
+(1, 'Bed', 'Cái giường', 'flashcard', 'I sleep in my bed.', 'https://loremflickr.com/400/300/bed', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/bed--_gb_1.mp3'),
+(1, 'Door', 'Cửa ra vào', 'mixed', 'Open the door, please.', 'https://loremflickr.com/400/300/door', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/door--_gb_1.mp3'),
+(1, 'Window', 'Cửa sổ', 'flashcard', 'Look out the window.', 'https://loremflickr.com/400/300/window', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/window--_gb_1.mp3'),
+(1, 'Pen', 'Cái bút', 'fill_gap', 'I write with a ___.', 'https://loremflickr.com/400/300/pen', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/pen--_gb_1.mp3'),
+(1, 'Bag', 'Cặp sách', 'mixed', 'Put your books in the bag.', 'https://loremflickr.com/400/300/bag', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/bag--_gb_1.mp3'),
+(1, 'Hat', 'Cái mũ', 'flashcard', 'He wears a hat.', 'https://loremflickr.com/400/300/hat', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/hat--_gb_1.mp3'),
+(1, 'Shoe', 'Giày', 'fill_gap', 'Tie your ___ laces.', 'https://loremflickr.com/400/300/shoe', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/shoe--_gb_1.mp3'),
+(1, 'Shirt', 'Áo sơ mi', 'flashcard', 'A white shirt.', 'https://loremflickr.com/400/300/shirt', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/shirt--_gb_1.mp3'),
+(1, 'Dress', 'Váy', 'mixed', 'A beautiful dress.', 'https://loremflickr.com/400/300/dress', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/dress--_gb_1.mp3'),
+(1, 'Sun', 'Mặt trời', 'flashcard', 'The sun is hot.', 'https://loremflickr.com/400/300/sun', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/sun--_gb_1.mp3'),
+(1, 'Moon', 'Mặt trăng', 'fill_gap', 'The ___ shines at night.', 'https://loremflickr.com/400/300/moon', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/moon--_gb_1.mp3'),
+(1, 'Star', 'Ngôi sao', 'flashcard', 'Twinkle twinkle little star.', 'https://loremflickr.com/400/300/star', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/star--_gb_1.mp3'),
+(1, 'Rain', 'Mưa', 'mixed', 'I do not like rain.', 'https://loremflickr.com/400/300/rain', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/rain--_gb_1.mp3'),
 
--- =============================================
--- LEVEL 3: MOVERS (Động từ, hoạt động hàng ngày)
--- =============================================
-(3, 'Breakfast', 'Bữa sáng', 'flashcard', 'What did you have for breakfast?', NULL),
-(3, 'Lunch', 'Bữa trưa', 'mixed', 'We eat lunch at 12 PM.', NULL),
-(3, 'Dinner', 'Bữa tối', 'fill_gap', 'My mom is cooking ___.', NULL), -- Key: dinner
-(3, 'Sleep', 'Ngủ', 'flashcard', 'I go to sleep at 10 PM.', NULL),
-(3, 'Watch', 'Xem (TV)', 'mixed', 'They watch TV every evening.', NULL),
-(3, 'Listen', 'Nghe', 'fill_gap', 'Please ___ to the music.', NULL), -- Key: listen
-(3, 'Play', 'Chơi', 'flashcard', 'Let\'s play football.', NULL),
-(3, 'Cook', 'Nấu ăn', 'mixed', 'Can you cook spaghetti?', NULL),
-(3, 'Drive', 'Lái xe', 'fill_gap', 'He knows how to ___ a car.', NULL), -- Key: drive
-(3, 'Swim', 'Bơi lội', 'flashcard', 'I like to swim in the sea.', NULL),
+-- -----------------------------------------------------------
+-- LEVEL 2: STARTERS (BODY, FAMILY, ADJECTIVES - 50 TỪ)
+-- -----------------------------------------------------------
+(2, 'Head', 'Đầu', 'flashcard', 'Nod your head.', 'https://loremflickr.com/400/300/face', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/head--_gb_1.mp3'),
+(2, 'Eye', 'Mắt', 'flashcard', 'Close your eyes.', 'https://loremflickr.com/400/300/eye', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/eye--_gb_1.mp3'),
+(2, 'Nose', 'Mũi', 'fill_gap', 'Touch your ___.', 'https://loremflickr.com/400/300/nose', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/nose--_gb_1.mp3'),
+(2, 'Mouth', 'Miệng', 'mixed', 'Open your mouth.', 'https://loremflickr.com/400/300/mouth', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/mouth--_gb_1.mp3'),
+(2, 'Ear', 'Tai', 'flashcard', 'Listen with your ears.', 'https://loremflickr.com/400/300/ear', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/ear--_gb_1.mp3'),
+(2, 'Hand', 'Bàn tay', 'fill_gap', 'Clap your ___.', 'https://loremflickr.com/400/300/hand', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/hand--_gb_1.mp3'),
+(2, 'Arm', 'Cánh tay', 'flashcard', 'Raise your arm.', 'https://loremflickr.com/400/300/arm', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/arm--_gb_1.mp3'),
+(2, 'Leg', 'Chân', 'mixed', 'Run with your legs.', 'https://loremflickr.com/400/300/leg', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/leg--_gb_1.mp3'),
+(2, 'Foot', 'Bàn chân', 'flashcard', 'Stomp your foot.', 'https://loremflickr.com/400/300/foot', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/foot--_gb_1.mp3'),
+(2, 'Hair', 'Tóc', 'fill_gap', 'She has long ___.', 'https://loremflickr.com/400/300/hair', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/hair--_gb_1.mp3'),
+(2, 'Face', 'Khuôn mặt', 'mixed', 'Wash your face.', 'https://loremflickr.com/400/300/face', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/face--_gb_1.mp3'),
+(2, 'Mother', 'Mẹ', 'flashcard', 'I love my mother.', 'https://loremflickr.com/400/300/mother', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/mother--_gb_1.mp3'),
+(2, 'Father', 'Bố', 'flashcard', 'My father is tall.', 'https://loremflickr.com/400/300/father', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/father--_gb_1.mp3'),
+(2, 'Sister', 'Chị/Em gái', 'fill_gap', 'My ___ plays with dolls.', 'https://loremflickr.com/400/300/sister', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/sister--_gb_1.mp3'),
+(2, 'Brother', 'Anh/Em trai', 'mixed', 'My brother likes cars.', 'https://loremflickr.com/400/300/brother', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/brother--_gb_1.mp3'),
+(2, 'Baby', 'Em bé', 'flashcard', 'The baby is crying.', 'https://loremflickr.com/400/300/baby', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/baby--_gb_1.mp3'),
+(2, 'Grandmother', 'Bà', 'fill_gap', 'My ___ is old.', 'https://loremflickr.com/400/300/grandmother', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/grandmother--_gb_1.mp3'),
+(2, 'Grandfather', 'Ông', 'mixed', 'My grandfather tells stories.', 'https://loremflickr.com/400/300/grandfather', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/grandfather--_gb_1.mp3'),
+(2, 'Family', 'Gia đình', 'flashcard', 'My family is happy.', 'https://loremflickr.com/400/300/family', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/family--_gb_1.mp3'),
+(2, 'House', 'Ngôi nhà', 'flashcard', 'This is my house.', 'https://loremflickr.com/400/300/house', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/house--_gb_1.mp3'),
+(2, 'Garden', 'Khu vườn', 'fill_gap', 'Flowers grow in the ___.', 'https://loremflickr.com/400/300/garden', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/garden--_gb_1.mp3'),
+(2, 'Kitchen', 'Nhà bếp', 'mixed', 'Mom cooks in the kitchen.', 'https://loremflickr.com/400/300/kitchen', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/kitchen--_gb_1.mp3'),
+(2, 'Bedroom', 'Phòng ngủ', 'flashcard', 'I sleep in the bedroom.', 'https://loremflickr.com/400/300/bedroom', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/bedroom--_gb_1.mp3'),
+(2, 'Bathroom', 'Phòng tắm', 'flashcard', 'I wash in the bathroom.', 'https://loremflickr.com/400/300/bathroom', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/bathroom--_gb_1.mp3'),
+(2, 'Happy', 'Vui vẻ', 'flashcard', 'I am happy.', 'https://loremflickr.com/400/300/happy', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/happy--_gb_1.mp3'),
+(2, 'Sad', 'Buồn', 'fill_gap', 'Why are you ___?', 'https://loremflickr.com/400/300/sad', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/sad--_gb_1.mp3'),
+(2, 'Angry', 'Tức giận', 'mixed', 'Do not be angry.', 'https://loremflickr.com/400/300/angry', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/angry--_gb_1.mp3'),
+(2, 'Tired', 'Mệt mỏi', 'flashcard', 'I am tired after running.', 'https://loremflickr.com/400/300/tired', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/tired--_gb_1.mp3'),
+(2, 'Hungry', 'Đói', 'flashcard', 'I am hungry, let us eat.', 'https://loremflickr.com/400/300/hungry', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/hungry--_gb_1.mp3'),
+(2, 'Thirsty', 'Khát nước', 'fill_gap', 'I am ___, give me water.', 'https://loremflickr.com/400/300/water', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/thirsty--_gb_1.mp3'),
+(2, 'Big', 'To lớn', 'mixed', 'An elephant is big.', 'https://loremflickr.com/400/300/elephant', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/big--_gb_1.mp3'),
+(2, 'Small', 'Nhỏ bé', 'flashcard', 'A mouse is small.', 'https://loremflickr.com/400/300/mouse', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/small--_gb_1.mp3'),
+(2, 'Hot', 'Nóng', 'flashcard', 'The tea is hot.', 'https://loremflickr.com/400/300/fire', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/hot--_gb_1.mp3'),
+(2, 'Cold', 'Lạnh', 'fill_gap', 'Ice is ___.', 'https://loremflickr.com/400/300/ice', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/cold--_gb_1.mp3'),
+(2, 'Fast', 'Nhanh', 'mixed', 'A car is fast.', 'https://loremflickr.com/400/300/car', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/fast--_gb_1.mp3'),
+(2, 'Slow', 'Chậm', 'flashcard', 'A turtle is slow.', 'https://loremflickr.com/400/300/turtle', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/slow--_gb_1.mp3'),
+(2, 'Tall', 'Cao', 'flashcard', 'The tree is tall.', 'https://loremflickr.com/400/300/tree', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/tall--_gb_1.mp3'),
+(2, 'Short', 'Thấp / Ngắn', 'fill_gap', 'The grass is ___.', 'https://loremflickr.com/400/300/grass', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/short--_gb_1.mp3'),
+(2, 'Good', 'Tốt', 'mixed', 'Very good job.', 'https://loremflickr.com/400/300/good', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/good--_gb_1.mp3'),
+(2, 'Bad', 'Xấu / Tệ', 'flashcard', 'That is a bad idea.', 'https://loremflickr.com/400/300/bad', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/bad--_gb_1.mp3'),
+(2, 'New', 'Mới', 'flashcard', 'I have a new phone.', 'https://loremflickr.com/400/300/phone', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/new--_gb_1.mp3'),
+(2, 'Old', 'Cũ / Già', 'fill_gap', 'My grandpa is ___.', 'https://loremflickr.com/400/300/man', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/old--_gb_1.mp3'),
+(2, 'Clean', 'Sạch sẽ', 'mixed', 'My room is clean.', 'https://loremflickr.com/400/300/room', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/clean--_gb_1.mp3'),
+(2, 'Dirty', 'Bẩn', 'flashcard', 'Your hands are dirty.', 'https://loremflickr.com/400/300/mud', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/dirty--_gb_1.mp3'),
+(2, 'Beautiful', 'Xinh đẹp', 'flashcard', 'A beautiful flower.', 'https://loremflickr.com/400/300/flower', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/beautiful--_gb_1.mp3'),
+(2, 'Ugly', 'Xấu xí', 'fill_gap', 'An ___ monster.', 'https://loremflickr.com/400/300/monster', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/ugly--_gb_1.mp3'),
+(2, 'Right', 'Đúng / Phải', 'mixed', 'Turn right.', 'https://loremflickr.com/400/300/arrow', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/right--_gb_1.mp3'),
+(2, 'Left', 'Trái', 'flashcard', 'Turn left.', 'https://loremflickr.com/400/300/arrow', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/left--_gb_1.mp3'),
+(2, 'Hard', 'Cứng / Khó', 'flashcard', 'The rock is hard.', 'https://loremflickr.com/400/300/rock', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/hard--_gb_1.mp3'),
+(2, 'Soft', 'Mềm', 'fill_gap', 'The pillow is ___.', 'https://loremflickr.com/400/300/pillow', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/soft--_gb_1.mp3'),
 
--- =============================================
--- LEVEL 7: IELTS 0 - 3.0 (Học thuật sơ cấp)
--- =============================================
-(7, 'Education', 'Giáo dục', 'mixed', 'Education is important for everyone.', NULL),
-(7, 'Global', 'Toàn cầu', 'flashcard', 'English is a global language.', NULL),
-(7, 'Topic', 'Chủ đề', 'fill_gap', 'Today\'s ___ is environment.', NULL), -- Key: topic
-(7, 'Discuss', 'Thảo luận', 'mixed', 'We need to discuss this problem.', NULL),
-(7, 'Solution', 'Giải pháp', 'fill_gap', 'We must find a ___ quickly.', NULL), -- Key: solution
-(7, 'Reason', 'Lý do', 'flashcard', 'Give me a reason to stay.', NULL),
-(7, 'Opinion', 'Ý kiến', 'mixed', 'In my opinion, it is good.', NULL),
-(7, 'Agree', 'Đồng ý', 'fill_gap', 'I totally ___ with you.', NULL), -- Key: agree
-(7, 'Disagree', 'Không đồng ý', 'flashcard', 'It is okay to disagree.', NULL),
-(7, 'Improve', 'Cải thiện', 'mixed', 'I want to improve my skills.', NULL),
-(7, 'Student', 'Sinh viên / Học sinh', NULL, NULL, 'flashcard', 'Every student needs a book.'),
-(7, 'Library', 'Thư viện', 'uploads/library.jpg', NULL, 'fill_gap', 'We study in the ___ every afternoon.'),
-(7, 'University', 'Trường đại học', NULL, NULL, 'mixed', 'She wants to go to a top university.'),
-(7, 'Homework', 'Bài tập về nhà', NULL, NULL, 'fill_gap', 'I must finish my ___ before watching TV.'),
+-- -----------------------------------------------------------
+-- LEVEL 3: MOVERS (ACTIONS, PLACES, NATURE - 50 TỪ)
+-- -----------------------------------------------------------
+(3, 'Run', 'Chạy', 'flashcard', 'Run fast.', 'https://loremflickr.com/400/300/run', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/run--_gb_1.mp3'),
+(3, 'Walk', 'Đi bộ', 'flashcard', 'I walk to school.', 'https://loremflickr.com/400/300/walk', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/walk--_gb_1.mp3'),
+(3, 'Jump', 'Nhảy', 'mixed', 'Jump high.', 'https://loremflickr.com/400/300/jump', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/jump--_gb_1.mp3'),
+(3, 'Swim', 'Bơi', 'fill_gap', 'I can ___ in the pool.', 'https://loremflickr.com/400/300/swim', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/swim--_gb_1.mp3'),
+(3, 'Sleep', 'Ngủ', 'flashcard', 'Go to sleep.', 'https://loremflickr.com/400/300/sleep', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/sleep--_gb_1.mp3'),
+(3, 'Eat', 'Ăn', 'mixed', 'Eat your food.', 'https://loremflickr.com/400/300/eat', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/eat--_gb_1.mp3'),
+(3, 'Drink', 'Uống', 'flashcard', 'Drink some water.', 'https://loremflickr.com/400/300/drink', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/drink--_gb_1.mp3'),
+(3, 'Read', 'Đọc', 'fill_gap', '___ a book.', 'https://loremflickr.com/400/300/read', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/read--_gb_1.mp3'),
+(3, 'Write', 'Viết', 'flashcard', 'Write your name.', 'https://loremflickr.com/400/300/write', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/write--_gb_1.mp3'),
+(3, 'Listen', 'Nghe', 'mixed', 'Listen to music.', 'https://loremflickr.com/400/300/listen', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/listen--_gb_1.mp3'),
+(3, 'Speak', 'Nói', 'flashcard', 'Speak English.', 'https://loremflickr.com/400/300/speak', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/speak--_gb_1.mp3'),
+(3, 'Sing', 'Hát', 'fill_gap', '___ a song.', 'https://loremflickr.com/400/300/sing', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/sing--_gb_1.mp3'),
+(3, 'Dance', 'Nhảy múa', 'flashcard', 'They like to dance.', 'https://loremflickr.com/400/300/dance', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/dance--_gb_1.mp3'),
+(3, 'Play', 'Chơi', 'mixed', 'Play football.', 'https://loremflickr.com/400/300/play', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/play--_gb_1.mp3'),
+(3, 'Cook', 'Nấu ăn', 'flashcard', 'Mom cooks dinner.', 'https://loremflickr.com/400/300/cook', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/cook--_gb_1.mp3'),
+(3, 'Drive', 'Lái xe', 'fill_gap', '___ a car.', 'https://loremflickr.com/400/300/drive', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/drive--_gb_1.mp3'),
+(3, 'Fly', 'Bay', 'flashcard', 'Birds fly in the sky.', 'https://loremflickr.com/400/300/fly', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/fly--_gb_1.mp3'),
+(3, 'City', 'Thành phố', 'mixed', 'I live in a city.', 'https://loremflickr.com/400/300/city', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/city--_gb_1.mp3'),
+(3, 'Park', 'Công viên', 'flashcard', 'Let us go to the park.', 'https://loremflickr.com/400/300/park', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/park--_gb_1.mp3'),
+(3, 'School', 'Trường học', 'fill_gap', 'I learn at ___.', 'https://loremflickr.com/400/300/school', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/school--_gb_1.mp3'),
+(3, 'Hospital', 'Bệnh viện', 'flashcard', 'Doctors work in a hospital.', 'https://loremflickr.com/400/300/hospital', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/hospital--_gb_1.mp3'),
+(3, 'Market', 'Chợ', 'mixed', 'Buy food at the market.', 'https://loremflickr.com/400/300/market', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/market--_gb_1.mp3'),
+(3, 'Shop', 'Cửa hàng', 'flashcard', 'A toy shop.', 'https://loremflickr.com/400/300/shop', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/shop--_gb_1.mp3'),
+(3, 'Bank', 'Ngân hàng', 'fill_gap', 'Get money from the ___.', 'https://loremflickr.com/400/300/bank', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/bank--_gb_1.mp3'),
+(3, 'Cinema', 'Rạp chiếu phim', 'flashcard', 'Watch a movie at the cinema.', 'https://loremflickr.com/400/300/cinema', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/cinema--_gb_1.mp3'),
+(3, 'Hotel', 'Khách sạn', 'mixed', 'Stay in a hotel.', 'https://loremflickr.com/400/300/hotel', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/hotel--_gb_1.mp3'),
+(3, 'Airport', 'Sân bay', 'flashcard', 'Planes at the airport.', 'https://loremflickr.com/400/300/airport', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/airport--_gb_1.mp3'),
+(3, 'Station', 'Nhà ga', 'fill_gap', 'Train ___ .', 'https://loremflickr.com/400/300/train', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/station--_gb_1.mp3'),
+(3, 'Library', 'Thư viện', 'flashcard', 'Quiet in the library.', 'https://loremflickr.com/400/300/library', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/library--_gb_1.mp3'),
+(3, 'Mountain', 'Núi', 'mixed', 'Climb a mountain.', 'https://loremflickr.com/400/300/mountain', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/mountain--_gb_1.mp3'),
+(3, 'River', 'Dòng sông', 'flashcard', 'A long river.', 'https://loremflickr.com/400/300/river', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/river--_gb_1.mp3'),
+(3, 'Lake', 'Hồ nước', 'fill_gap', 'Fish in the ___.', 'https://loremflickr.com/400/300/lake', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/lake--_gb_1.mp3'),
+(3, 'Sea', 'Biển', 'flashcard', 'The sea is blue.', 'https://loremflickr.com/400/300/sea', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/sea--_gb_1.mp3'),
+(3, 'Beach', 'Bãi biển', 'mixed', 'Play on the beach.', 'https://loremflickr.com/400/300/beach', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/beach--_gb_1.mp3'),
+(3, 'Forest', 'Rừng', 'flashcard', 'Trees in the forest.', 'https://loremflickr.com/400/300/forest', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/forest--_gb_1.mp3'),
+(3, 'Flower', 'Bông hoa', 'fill_gap', 'A pretty ___.', 'https://loremflickr.com/400/300/flower', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/flower--_gb_1.mp3'),
+(3, 'Tree', 'Cây', 'flashcard', 'A green tree.', 'https://loremflickr.com/400/300/tree', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/tree--_gb_1.mp3'),
+(3, 'Grass', 'Cỏ', 'mixed', 'Sit on the grass.', 'https://loremflickr.com/400/300/grass', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/grass--_gb_1.mp3'),
+(3, 'Sky', 'Bầu trời', 'flashcard', 'Look at the sky.', 'https://loremflickr.com/400/300/sky', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/sky--_gb_1.mp3'),
+(3, 'Road', 'Con đường', 'fill_gap', 'Cross the ___.', 'https://loremflickr.com/400/300/road', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/road--_gb_1.mp3'),
+(3, 'Car', 'Xe hơi', 'flashcard', 'Drive a car.', 'https://loremflickr.com/400/300/car', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/car--_gb_1.mp3'),
+(3, 'Bus', 'Xe buýt', 'mixed', 'Take the bus.', 'https://loremflickr.com/400/300/bus', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/bus--_gb_1.mp3'),
+(3, 'Bike', 'Xe đạp', 'flashcard', 'Ride a bike.', 'https://loremflickr.com/400/300/bicycle', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/bike--_gb_1.mp3'),
+(3, 'Train', 'Tàu hỏa', 'fill_gap', 'A fast ___.', 'https://loremflickr.com/400/300/train', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/train--_gb_1.mp3'),
+(3, 'Plane', 'Máy bay', 'flashcard', 'Fly in a plane.', 'https://loremflickr.com/400/300/airplane', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/plane--_gb_1.mp3'),
+(3, 'Boat', 'Thuyền', 'mixed', 'Sail a boat.', 'https://loremflickr.com/400/300/boat', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/boat--_gb_1.mp3'),
+(3, 'Morning', 'Buổi sáng', 'flashcard', 'Good morning.', 'https://loremflickr.com/400/300/sunrise', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/morning--_gb_1.mp3'),
+(3, 'Night', 'Buổi đêm', 'fill_gap', 'Sleep at ___.', 'https://loremflickr.com/400/300/night', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/night--_gb_1.mp3'),
+(3, 'Day', 'Ban ngày', 'flashcard', 'A sunny day.', 'https://loremflickr.com/400/300/day', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/day--_gb_1.mp3'),
+(3, 'Time', 'Thời gian', 'mixed', 'What time is it?', 'https://loremflickr.com/400/300/clock', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/time--_gb_1.mp3'),
 
--- =============================================
--- LEVEL 10: GIAO TIẾP VĂN PHÒNG (Business English)
--- =============================================
-(10, 'Deadline', 'Hạn chót', 'fill_gap', 'We must meet the ___ tomorrow.', NULL), -- Key: deadline
-(10, 'Schedule', 'Lịch trình', 'mixed', 'Let me check my schedule.', NULL),
-(10, 'Presentation', 'Bài thuyết trình', 'flashcard', 'Your presentation was excellent.', NULL),
-(10, 'Report', 'Báo cáo', 'fill_gap', 'Submit the monthly ___ by Friday.', NULL), -- Key: report
-(10, 'Client', 'Khách hàng', 'mixed', 'The client is waiting in the lobby.', NULL),
-(10, 'Manager', 'Quản lý', 'flashcard', 'I need to speak to the manager.', NULL),
-(10, 'Promotion', 'Thăng chức', 'fill_gap', 'She got a ___ last month.', NULL), -- Key: promotion
-(10, 'Resign', 'Từ chức', 'mixed', 'He decided to resign for personal reasons.', NULL),
-(10, 'Recruit', 'Tuyển dụng', 'flashcard', 'Our company wants to recruit new staff.', NULL),
-(10, 'Invoice', 'Hóa đơn', 'fill_gap', 'Please send me the ___ via email.', NULL); -- Key: invoice
-(10, 'Meeting', 'Cuộc họp', NULL, NULL, 'flashcard', 'We have a meeting at 9 AM.'),
-(10, 'Contract', 'Hợp đồng', 'uploads/contract.png', NULL, 'fill_gap', 'Please sign the ___ on the last page.'),
-(10, 'Salary', 'Tiền lương', NULL, NULL, 'mixed', 'He receives a high salary.'),
-(10, 'Colleague', 'Đồng nghiệp', NULL, NULL, 'flashcard', 'My colleague sits next to me.');
-
-
-
+-- -----------------------------------------------------------
+-- LEVEL 10: BUSINESS & OFFICE (40 TỪ - NÂNG CAO)
+-- -----------------------------------------------------------
+(10, 'Business', 'Kinh doanh', 'flashcard', 'Business is good.', 'https://loremflickr.com/400/300/business', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/business--_gb_1.mp3'),
+(10, 'Office', 'Văn phòng', 'flashcard', 'I work in an office.', 'https://loremflickr.com/400/300/office', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/office--_gb_1.mp3'),
+(10, 'Company', 'Công ty', 'fill_gap', 'A big software ___.', 'https://loremflickr.com/400/300/company', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/company--_gb_1.mp3'),
+(10, 'Meeting', 'Cuộc họp', 'mixed', 'Attend a meeting.', 'https://loremflickr.com/400/300/meeting', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/meeting--_gb_1.mp3'),
+(10, 'Manager', 'Quản lý', 'flashcard', 'The manager is busy.', 'https://loremflickr.com/400/300/manager', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/manager--_gb_1.mp3'),
+(10, 'Staff', 'Nhân viên', 'flashcard', 'Helpful staff.', 'https://loremflickr.com/400/300/staff', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/staff--_gb_1.mp3'),
+(10, 'Boss', 'Ông chủ', 'fill_gap', 'Ask the ___.', 'https://loremflickr.com/400/300/boss', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/boss--_gb_1.mp3'),
+(10, 'Client', 'Khách hàng', 'mixed', 'Meet the client.', 'https://loremflickr.com/400/300/client', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/client--_gb_1.mp3'),
+(10, 'Money', 'Tiền', 'flashcard', 'Save money.', 'https://loremflickr.com/400/300/money', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/money--_gb_1.mp3'),
+(10, 'Bank', 'Ngân hàng', 'flashcard', 'Deposit in the bank.', 'https://loremflickr.com/400/300/bank', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/bank--_gb_1.mp3'),
+(10, 'Price', 'Giá cả', 'fill_gap', 'The ___ is high.', 'https://loremflickr.com/400/300/price', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/price--_gb_1.mp3'),
+(10, 'Cost', 'Chi phí', 'mixed', 'Low cost.', 'https://loremflickr.com/400/300/invoice', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/cost--_gb_1.mp3'),
+(10, 'Pay', 'Thanh toán', 'flashcard', 'Pay the bill.', 'https://loremflickr.com/400/300/pay', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/pay--_gb_1.mp3'),
+(10, 'Buy', 'Mua', 'flashcard', 'Buy shares.', 'https://loremflickr.com/400/300/buy', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/buy--_gb_1.mp3'),
+(10, 'Sell', 'Bán', 'fill_gap', '___ products.', 'https://loremflickr.com/400/300/sell', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/sell--_gb_1.mp3'),
+(10, 'Market', 'Thị trường', 'mixed', 'Stock market.', 'https://loremflickr.com/400/300/market', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/market--_gb_1.mp3'),
+(10, 'Job', 'Công việc', 'flashcard', 'I love my job.', 'https://loremflickr.com/400/300/job', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/job--_gb_1.mp3'),
+(10, 'Work', 'Làm việc', 'flashcard', 'Work hard.', 'https://loremflickr.com/400/300/work', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/work--_gb_1.mp3'),
+(10, 'Goal', 'Mục tiêu', 'fill_gap', 'Reach your ___.', 'https://loremflickr.com/400/300/target', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/goal--_gb_1.mp3'),
+(10, 'Plan', 'Kế hoạch', 'mixed', 'Make a plan.', 'https://loremflickr.com/400/300/plan', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/plan--_gb_1.mp3'),
+(10, 'Project', 'Dự án', 'flashcard', 'New project.', 'https://loremflickr.com/400/300/project', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/project--_gb_1.mp3'),
+(10, 'Team', 'Đội nhóm', 'flashcard', 'Teamwork is key.', 'https://loremflickr.com/400/300/team', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/team--_gb_1.mp3'),
+(10, 'Report', 'Báo cáo', 'fill_gap', 'Write a ___.', 'https://loremflickr.com/400/300/report', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/report--_gb_1.mp3'),
+(10, 'Data', 'Dữ liệu', 'mixed', 'Analyze data.', 'https://loremflickr.com/400/300/data', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/data--_gb_1.mp3'),
+(10, 'Computer', 'Máy tính', 'flashcard', 'Laptop computer.', 'https://loremflickr.com/400/300/computer', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/computer--_gb_1.mp3'),
+(10, 'Internet', 'Mạng', 'flashcard', 'Surf the internet.', 'https://loremflickr.com/400/300/internet', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/internet--_gb_1.mp3'),
+(10, 'Email', 'Thư điện tử', 'fill_gap', 'Send an ___.', 'https://loremflickr.com/400/300/email', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/email--_gb_1.mp3'),
+(10, 'Phone', 'Điện thoại', 'mixed', 'Answer the phone.', 'https://loremflickr.com/400/300/phone', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/phone--_gb_1.mp3'),
+(10, 'Contract', 'Hợp đồng', 'flashcard', 'Sign the contract.', 'https://loremflickr.com/400/300/contract', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/contract--_gb_1.mp3'),
+(10, 'Deal', 'Thỏa thuận', 'flashcard', 'It is a deal.', 'https://loremflickr.com/400/300/handshake', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/deal--_gb_1.mp3'),
+(10, 'Risk', 'Rủi ro', 'fill_gap', 'High ___.', 'https://loremflickr.com/400/300/risk', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/risk--_gb_1.mp3'),
+(10, 'Idea', 'Ý tưởng', 'mixed', 'Great idea.', 'https://loremflickr.com/400/300/idea', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/idea--_gb_1.mp3'),
+(10, 'Success', 'Thành công', 'flashcard', 'Wish you success.', 'https://loremflickr.com/400/300/success', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/success--_gb_1.mp3'),
+(10, 'Failure', 'Thất bại', 'flashcard', 'Learn from failure.', 'https://loremflickr.com/400/300/fail', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/failure--_gb_1.mp3'),
+(10, 'Growth', 'Tăng trưởng', 'fill_gap', 'Business ___.', 'https://loremflickr.com/400/300/growth', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/growth--_gb_1.mp3'),
+(10, 'Profit', 'Lợi nhuận', 'mixed', 'Make a profit.', 'https://loremflickr.com/400/300/profit', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/profit--_gb_1.mp3'),
+(10, 'Loss', 'Thua lỗ', 'flashcard', 'Avoid loss.', 'https://loremflickr.com/400/300/loss', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/loss--_gb_1.mp3'),
+(10, 'Tax', 'Thuế', 'flashcard', 'Pay tax.', 'https://loremflickr.com/400/300/tax', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/tax--_gb_1.mp3'),
+(10, 'Law', 'Luật pháp', 'fill_gap', 'Follow the ___.', 'https://loremflickr.com/400/300/law', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/law--_gb_1.mp3'),
+(10, 'Skill', 'Kỹ năng', 'mixed', 'Improve your skill.', 'https://loremflickr.com/400/300/skill', 'https://ssl.gstatic.com/dictionary/static/sounds/oxford/skill--_gb_1.mp3');
