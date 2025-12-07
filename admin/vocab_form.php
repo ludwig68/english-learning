@@ -388,7 +388,7 @@ if ($audioPreview && !preg_match('~^https?://~i', $audioPreview)) {
                                     <option value="mixed" <?= $type === 'mixed' ? 'selected' : '' ?>>mixed</option>
                                 </select>
                                 <p class="mt-1 text-[0.7rem] text-slate-400 leading-snug">
-                                    • <b>flashcard</b>: dùng cho thẻ học từ (hiển thị hình, audio, nghĩa.<br>
+                                    • <b>flashcard</b>: dùng cho thẻ học từ (hiển thị hình, audio, nghĩa).<br>
                                     • <b>fill_gap</b>: dùng cho câu hỏi điền từ vào chỗ trống trong Practice.<br>
                                     • <b>mixed</b>: dùng cho cả flashcard & practice, hệ thống có thể random dạng câu hỏi.
                                 </p>

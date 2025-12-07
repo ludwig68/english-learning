@@ -136,8 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $hash = password_hash($password, PASSWORD_BCRYPT);
                 $stmt = $pdo->prepare("
                     UPDATE users
-                    SET username = ?, full_name = ?, email = ?, phone = ?, avatar = ?, role = ?, status = ?
-                      , password = ?
+                    SET username = ?, full_name = ?, email = ?, phone = ?, avatar = ?, role = ?, status = ?, password = ?
                     WHERE id = ?
                 ");
                 $stmt->execute([
