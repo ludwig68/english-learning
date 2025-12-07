@@ -30,6 +30,8 @@ if (!$vocabList) {
 $level_name = $vocabList[0]['level_name'];
 ?>
 
+<?php require_once __DIR__ . '/../includes/user_navbar.php'; ?>
+
 <div class="flex items-center justify-between mb-4">
     <div>
         <h2 class="text-xl font-semibold">Flashcard – Level <?= htmlspecialchars($level_name) ?></h2>
@@ -54,10 +56,10 @@ $level_name = $vocabList[0]['level_name'];
                             <?= htmlspecialchars($v['word']) ?>
                         </div>
                         <div class="flex items-center gap-3 text-xs text-slate-500">
-                            <?php if ($v['audio_path']): ?>
+                            <?php if (!empty($v['audio_url'])): ?>
                                 <button
                                     class="px-3 py-1 rounded-full bg-white border border-slate-300 text-[0.7rem] flex items-center gap-2 hover:border-[#7AE582]"
-                                    onclick="event.stopPropagation(); new Audio('/<?= htmlspecialchars($v['audio_path']) ?>').play();">
+                                    onclick="event.stopPropagation(); new Audio('/<?= htmlspecialchars($v['audio_url']) ?>').play();">
                                     <i class="fa-solid fa-volume-high"></i> Nghe
                                 </button>
                             <?php endif; ?>
@@ -73,11 +75,13 @@ $level_name = $vocabList[0]['level_name'];
                     <div class="text-sm font-semibold mb-1">
                         <?= htmlspecialchars($v['meaning']) ?>
                     </div>
-                    <?php if ($v['image_path']): ?>
-                        <img src="/<?= htmlspecialchars($v['image_path']) ?>"
+
+                    <?php if (!empty($v['image_url'])): ?>
+                        <img src="/<?= htmlspecialchars($v['image_url']) ?>"
                              alt="" class="mt-2 max-h-24 rounded-md object-contain">
                     <?php endif; ?>
-                    <?php if ($v['example_sentence']): ?>
+
+                    <?php if (!empty($v['example_sentence'])): ?>
                         <p class="mt-3 text-xs text-emerald-900">
                             <?= htmlspecialchars($v['example_sentence']) ?>
                         </p>

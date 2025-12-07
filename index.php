@@ -2,6 +2,9 @@
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/header.php';
 
+// Đã đăng nhập hay chưa
+$isLoggedIn = !empty($_SESSION['user_id']);
+
 // Lấy từ khóa tìm kiếm, nếu có
 $q = isset($_GET['q']) ? trim($_GET['q']) : '';
 
@@ -64,15 +67,26 @@ if ($q !== '') {
                 Học từ vựng theo level, luyện nghe – nhìn – điền từ với giao diện sáng, nhẹ,
                 phù hợp cho người mới bắt đầu đến nâng cao.
             </p>
+
             <div class="flex flex-wrap justify-center gap-3 mt-5">
-                <a href="/auth/register.php"
-                   class="px-4 py-2.5 rounded-full bg-[#7AE582] text-slate-900 text-sm font-semibold hover:bg-emerald-300 transition">
-                    Bắt đầu học miễn phí
-                </a>
-                <a href="/auth/login.php"
-                   class="px-4 py-2.5 rounded-full border border-slate-300 text-slate-700 text-sm hover:border-[#7AE582] hover:text-[#7AE582] transition">
-                    Tôi đã có tài khoản
-                </a>
+                <?php if (!$isLoggedIn): ?>
+                    <!-- Chưa đăng nhập: nút đăng ký + đăng nhập -->
+                    <a href="/auth/register.php"
+                       class="px-4 py-2.5 rounded-full bg-[#7AE582] text-slate-900 text-sm font-semibold hover:bg-emerald-300 transition">
+                        Bắt đầu học miễn phí
+                    </a>
+                    <a href="/auth/login.php"
+                       class="px-4 py-2.5 rounded-full border border-slate-300 text-slate-700 text-sm hover:border-[#7AE582] hover:text-[#7AE582] transition">
+                        Tôi đã có tài khoản
+                    </a>
+                <?php else: ?>
+                    <!-- Đã đăng nhập: chỉ còn nút vào học ngay -->
+                    <a href="/user/dashboard.php"
+                       class="px-6 py-2.5 rounded-full bg-[#7AE582] text-slate-900 text-sm font-semibold hover:bg-emerald-300 transition inline-flex items-center gap-2">
+                        Vào học ngay
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -123,6 +137,12 @@ if ($q !== '') {
 
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <?php foreach ($levels as $lv): ?>
+                    <?php
+                    // URL cho mỗi level: nếu đã login thì vào thẳng learn.php, nếu chưa thì sang login
+                    $levelUrl = $isLoggedIn
+                        ? '/user/learn.php?level_id=' . (int)$lv['id']
+                        : '/auth/login.php';
+                    ?>
                     <div class="card-glass p-4 flex flex-col animate__animated animate__fadeInUp">
                         <div class="flex items-center justify-between mb-2">
                             <h3 class="font-semibold text-base">
@@ -139,7 +159,7 @@ if ($q !== '') {
                             <span class="text-[0.7rem] text-slate-400">
                                 Từ vựng &amp; bài tập tương tác
                             </span>
-                            <a href="/user/learn.php?level_id=<?= $lv['id'] ?>"
+                            <a href="<?= $levelUrl ?>"
                                class="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-[rgba(122,229,130,0.08)] text-[#16a34a] border border-[rgba(122,229,130,0.6)] hover:bg-[rgba(122,229,130,0.16)] transition">
                                 Học Level này
                                 <i class="fa-solid fa-arrow-right text-[0.6rem]"></i>
@@ -154,6 +174,7 @@ if ($q !== '') {
             </div>
         </div>
 
+        <!-- Các section dưới giữ nguyên -->
         <!-- Cách hệ thống hoạt động -->
         <div class="mb-10">
             <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -259,6 +280,11 @@ if ($q !== '') {
             <?php if ($levels): ?>
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <?php foreach ($levels as $lv): ?>
+                        <?php
+                        $levelUrl = $isLoggedIn
+                            ? '/user/learn.php?level_id=' . (int)$lv['id']
+                            : '/auth/login.php';
+                        ?>
                         <div class="card-glass p-4 flex flex-col">
                             <div class="flex items-center justify-between mb-2">
                                 <h3 class="font-semibold text-base">
@@ -271,7 +297,7 @@ if ($q !== '') {
                             <p class="text-xs text-slate-500 mb-3">
                                 <?= htmlspecialchars(mb_strimwidth($lv['description'], 0, 120, '...')) ?>
                             </p>
-                            <a href="/user/learn.php?level_id=<?= $lv['id'] ?>"
+                            <a href="<?= $levelUrl ?>"
                                class="mt-auto inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-md bg-[#7AE582] text-slate-900 font-semibold hover:bg-emerald-300 transition">
                                 Vào học Level này
                                 <i class="fa-solid fa-arrow-right text-[0.6rem]"></i>
@@ -295,7 +321,7 @@ if ($q !== '') {
                     </span>
                     Từ vựng khớp
                 </h2>
-            <span class="text-xs text-slate-400">
+                <span class="text-xs text-slate-400">
                     <?= count($vocabResults) ?> từ vựng tìm được
                 </span>
             </div>
@@ -332,7 +358,7 @@ if ($q !== '') {
                                         <i class="fa-solid fa-volume-high"></i> Nghe
                                     </button>
                                 <?php endif; ?>
-                                <a href="/user/flashcard.php?level_id=<?= $v['level_id'] ?>"
+                                <a href="<?= $isLoggedIn ? '/user/flashcard.php?level_id=' . (int)$v['level_id'] : '/auth/login.php' ?>"
                                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-slate-300 text-slate-700 hover:border-[#7AE582] hover:text-[#16a34a]">
                                     <i class="fa-regular fa-clone"></i> Xem flashcard
                                 </a>

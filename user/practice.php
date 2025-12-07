@@ -11,11 +11,13 @@ if ($level_id <= 0) {
     exit;
 }
 
-// Lấy random 1 từ
+// Lấy random 1 từ trong level
 $stmt = $pdo->prepare("
-    SELECT * FROM vocabularies
+    SELECT *
+    FROM vocabularies
     WHERE level_id = ? AND deleted_at IS NULL
-    ORDER BY RAND() LIMIT 1
+    ORDER BY RAND() 
+    LIMIT 1
 ");
 $stmt->execute([$level_id]);
 $question = $stmt->fetch();
@@ -26,11 +28,13 @@ if (!$question) {
     exit;
 }
 
-// Distractors
+// Lấy 3 đáp án nhiễu
 $stmt = $pdo->prepare("
-    SELECT word FROM vocabularies
+    SELECT word 
+    FROM vocabularies
     WHERE level_id = ? AND deleted_at IS NULL AND id <> ?
-    ORDER BY RAND() LIMIT 3
+    ORDER BY RAND() 
+    LIMIT 3
 ");
 $stmt->execute([$level_id, $question['id']]);
 $distractors = $stmt->fetchAll(PDO::FETCH_COLUMN);
@@ -39,18 +43,22 @@ $options = $distractors;
 $options[] = $question['word'];
 shuffle($options);
 
-// random mode
+// random mode: 
+// 1 = trắc nghiệm nghĩa -> từ
+// 2 = nhìn hình nhập từ (nếu có image_url)
+// 3 = nghe audio điền từ (nếu có audio_url + example_sentence)
 $mode = rand(1, 3);
 ?>
+<?php require_once __DIR__ . '/../includes/user_navbar.php'; ?>
 
 <div class="flex items-center justify-between mb-4">
     <div>
-        <h2 class="text-xl font-semibold">Practice – Level <?= $level_id ?></h2>
+        <h2 class="text-xl font-semibold">Practice – Level <?= (int)$level_id ?></h2>
         <p class="text-xs text-slate-500">
             Trả lời câu hỏi, hệ thống sẽ chấm bằng SweetAlert2.
         </p>
     </div>
-    <a href="/user/learn.php?level_id=<?= $level_id ?>"
+    <a href="/user/learn.php?level_id=<?= (int)$level_id ?>"
        class="text-xs text-slate-500 hover:text-[#16a34a]">
         <i class="fa-solid fa-arrow-left mr-1"></i> Quay lại
     </a>
@@ -58,10 +66,11 @@ $mode = rand(1, 3);
 
 <div class="card-glass p-5 animate__animated animate__fadeInUp">
     <form id="practice-form" class="space-y-4">
-        <input type="hidden" name="vocab_id" value="<?= $question['id'] ?>">
-        <input type="hidden" name="mode" value="<?= $mode ?>">
+        <input type="hidden" name="vocab_id" value="<?= (int)$question['id'] ?>">
+        <input type="hidden" name="mode" value="<?= (int)$mode ?>">
 
         <?php if ($mode === 1): ?>
+            <!-- Mode 1: Nghĩa -> chọn từ -->
             <p class="text-sm">
                 <span class="text-[#16a34a] font-semibold">Nghĩa:</span>
                 <?= htmlspecialchars($question['meaning']) ?>
@@ -76,25 +85,35 @@ $mode = rand(1, 3);
                 <?php endforeach; ?>
             </div>
 
-        <?php elseif ($mode === 2 && $question['image_path']): ?>
+        <?php
+        // Mode 2: nhìn hình -> nhập từ (chỉ dùng khi có image_url)
+        elseif ($mode === 2 && !empty($question['image_url'])): ?>
             <p class="text-sm mb-2">
                 Nhìn hình dưới đây và nhập từ tiếng Anh tương ứng:
             </p>
-            <img src="/<?= htmlspecialchars($question['image_path']) ?>"
-                 alt="" class="max-h-40 rounded-md mb-3 object-contain">
+            <img src="/<?= htmlspecialchars($question['image_url']) ?>"
+                 alt=""
+                 class="max-h-40 rounded-md mb-3 object-contain mx-auto">
             <input type="text" name="answer"
                    class="w-full rounded-md bg-white border border-slate-300 text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#7AE582]"
                    placeholder="Nhập từ tiếng Anh..." required>
 
-        <?php elseif ($mode === 3 && $question['audio_path'] && $question['example_sentence']): ?>
+        <?php
+        // Mode 3: nghe audio + điền từ (chỉ dùng khi có audio_url + example_sentence)
+        elseif (
+            $mode === 3 &&
+            !empty($question['audio_url']) &&
+            !empty($question['example_sentence'])
+        ): ?>
             <p class="text-sm mb-2">
                 Nghe audio và điền từ còn thiếu vào câu:
             </p>
             <audio controls class="mb-3 w-full">
-                <source src="/<?= htmlspecialchars($question['audio_path']) ?>" type="audio/mpeg">
+                <source src="/<?= htmlspecialchars($question['audio_url']) ?>" type="audio/mpeg">
             </audio>
             <p class="text-xs text-slate-600 mb-2">
                 <?php
+                // Thay word bằng ____ trong câu ví dụ
                 $sentence = str_ireplace($question['word'], '____', $question['example_sentence']);
                 echo htmlspecialchars($sentence);
                 ?>
@@ -104,6 +123,7 @@ $mode = rand(1, 3);
                    placeholder="Nhập từ còn thiếu..." required>
 
         <?php else: ?>
+            <!-- Fallback: Nghĩa -> nhập từ -->
             <p class="text-sm mb-2">
                 <span class="text-[#16a34a] font-semibold">Nghĩa:</span>
                 <?= htmlspecialchars($question['meaning']) ?>
@@ -115,7 +135,7 @@ $mode = rand(1, 3);
 
         <button
             class="mt-3 inline-flex items-center gap-2 text-xs px-4 py-2 rounded-md bg-[#7AE582] text-slate-900 font-semibold hover:bg-emerald-300 transition">
-            <i class="fa-solid fa-check"></i> Check
+            <i class="fa-solid fa-check"></i> Kiểm tra đáp án
         </button>
     </form>
 </div>

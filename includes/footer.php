@@ -4,6 +4,7 @@
     </div>
 </main>
 
+<?php if (empty($hideFooter)): ?>
 <footer class="border-t border-slate-200 bg-white mt-8">
     <div class="max-w-6xl mx-auto px-4 py-8 grid gap-6 md:grid-cols-4 text-xs text-slate-600">
         <!-- Cột 1: Logo + giới thiệu -->
@@ -24,28 +25,12 @@
         <div>
             <h3 class="text-[0.8rem] font-semibold text-slate-800 mb-2">Liên kết nhanh</h3>
             <ul class="space-y-1">
-                <li>
-                    <a href="/index.php" class="hover:text-[#16a34a]">Trang chủ</a>
-                </li>
-                <li>
-                    <a href="/user/learn.php" class="hover:text-[#16a34a]">Lộ trình Level</a>
-                </li>
-                <li>
-                    <a href="/user/flashcard.php?level_id=1" class="hover:text-[#16a34a]">
-                        Flashcard (demo)
-                    </a>
-                </li>
-                <li>
-                    <a href="/user/practice.php?level_id=1" class="hover:text-[#16a34a]">
-                        Practice (demo)
-                    </a>
-                </li>
-                <li>
-                    <a href="/auth/login.php" class="hover:text-[#16a34a]">Đăng nhập</a>
-                </li>
-                <li>
-                    <a href="/auth/register.php" class="hover:text-[#16a34a]">Đăng ký</a>
-                </li>
+                <li><a href="/index.php" class="hover:text-[#16a34a]">Trang chủ</a></li>
+                <li><a href="/user/learn.php" class="hover:text-[#16a34a]">Lộ trình Level</a></li>
+                <li><a href="/user/flashcard.php?level_id=1" class="hover:text-[#16a34a]">Flashcard (demo)</a></li>
+                <li><a href="/user/practice.php?level_id=1" class="hover:text-[#16a34a]">Practice (demo)</a></li>
+                <li><a href="/auth/login.php" class="hover:text-[#16a34a]">Đăng nhập</a></li>
+                <li><a href="/auth/register.php" class="hover:text-[#16a34a]">Đăng ký</a></li>
             </ul>
         </div>
 
@@ -68,15 +53,9 @@
             </ul>
 
             <div class="flex gap-3 mt-3 text-slate-400">
-                <a href="#" class="hover:text-[#16a34a]">
-                    <i class="fa-brands fa-facebook-f"></i>
-                </a>
-                <a href="#" class="hover:text-[#16a34a]">
-                    <i class="fa-brands fa-youtube"></i>
-                </a>
-                <a href="#" class="hover:text-[#16a34a]">
-                    <i class="fa-brands fa-tiktok"></i>
-                </a>
+                <a href="#" class="hover:text-[#16a34a]"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" class="hover:text-[#16a34a]"><i class="fa-brands fa-youtube"></i></a>
+                <a href="#" class="hover:text-[#16a34a]"><i class="fa-brands fa-tiktok"></i></a>
             </div>
         </div>
 
@@ -84,7 +63,6 @@
         <div>
             <h3 class="text-[0.8rem] font-semibold text-slate-800 mb-2">Bản đồ</h3>
             <div class="h-32 sm:h-40 rounded-lg overflow-hidden border border-slate-200">
-                <!-- Bạn có thể đổi src bên dưới sang địa chỉ thật của trung tâm / trường bạn -->
                 <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4510990344718!2d106.700423!3d10.775658!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f3f1d9c9e7f%3A0x42b1e0!2zSG_DoGNoIENo4bq_IENpdHkgQ2VudGVyLCBIQ00!5e0!3m2!1svi!2svn!4v1700000000000!5m2!1svi!2s"
                     width="100%"
@@ -110,6 +88,7 @@
         </div>
     </div>
 </footer>
+<?php endif; ?>
 
 <script src="/assets/js/app.js"></script>
 </body>

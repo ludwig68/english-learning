@@ -45,6 +45,7 @@ if ($level_id === 0) {
     exit;
 }
 ?>
+<?php require_once __DIR__ . '/../includes/user_navbar.php'; ?>
 
 <div class="flex items-center justify-between mb-4">
     <div>

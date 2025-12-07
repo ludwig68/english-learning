@@ -1,11 +1,29 @@
-<?php
+<?php 
 // includes/header.php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Xác định script hiện tại
+$currentScript = $_SERVER['PHP_SELF'] ?? '';
+
+// Trang dashboard
+$isDashboard = (strpos($currentScript, '/user/dashboard.php') !== false);
+
+// Trang auth (login / register)
+$isAuthPage = (
+    strpos($currentScript, '/auth/login.php') !== false ||
+    strpos($currentScript, '/auth/register.php') !== false
+);
+
+// Nếu đã đăng nhập mà vẫn truy cập login/register -> đẩy về dashboard
+if (!empty($_SESSION['user_id']) && $isAuthPage) {
+    header('Location: /user/dashboard.php');
+    exit;
+}
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <title>English Learning System</title>
@@ -39,67 +57,78 @@ if (session_status() === PHP_SESSION_NONE) {
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
 
-<!-- Navbar sáng -->
+<?php if (!$isDashboard): ?>
+<!-- Navbar -->
 <nav class="w-full border-b border-slate-200 bg-white/90 backdrop-blur sticky top-0 z-30">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center gap-4">
         <!-- Logo / Brand -->
-        <div class="flex items-center gap-6">
-            <a href="/index.php" class="flex items-center gap-2">
-                <span class="w-3 h-3 rounded-full bg-[#7AE582] shadow-[0_0_10px_#7AE582]"></span>
-                <span class="font-semibold tracking-wide text-sm sm:text-base text-slate-800">
+        <a href="/index.php" class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-[#7AE582] shadow-[0_0_10px_#7AE582]"></span>
+            <div class="flex flex-col leading-tight">
+                <span class="font-semibold tracking-wide text-base text-slate-800">
                     English Learning
                 </span>
-            </a>
+                <span class="text-[0.7rem] text-slate-400">
+                    Học tiếng Anh miễn phí mỗi ngày
+                </span>
+            </div>
+        </a>
 
-            <!-- Menu chính (desktop) -->
-            <div class="hidden md:flex items-center gap-4 text-xs text-slate-600">
-                <a href="/about.php" class="hover:text-[#16a34a]">
+        <!-- Menu -->
+        <div class="hidden md:flex flex-1 items-center justify-center">
+            <nav class="flex items-center gap-6 text-sm">
+                <a href="/index.php" class="text-slate-700 hover:text-[#16a34a]">
                     Giới thiệu
                 </a>
-                <a href="/news.php" class="hover:text-[#16a34a]">
+                <a href="/news.php" class="text-slate-700 hover:text-[#16a34a]">
                     Tin tức
                 </a>
-                <a href="/support.php" class="hover:text-[#16a34a]">
+                <a href="/support.php" class="text-slate-700 hover:text-[#16a34a]">
                     Hỗ trợ
                 </a>
-                <a href="/contact.php" class="hover:text-[#16a34a]">
+                <a href="/contact.php" class="text-slate-700 hover:text-[#16a34a]">
                     Liên hệ
                 </a>
-                <a href="/lab.php" class="hover:text-[#16a34a]">
+                <a href="/lab.php" class="text-slate-700 hover:text-[#16a34a]">
                     Lab
                 </a>
-            </div>
+            </nav>
         </div>
 
-        <!-- Search + Auth -->
+        <!-- Right: Search + Auth -->
         <div class="flex items-center gap-3 text-sm">
-            <!-- Search (ẩn trên màn hình rất nhỏ) -->
+            <!-- Search -->
             <form action="/index.php" method="get"
                   class="hidden sm:flex items-center bg-slate-100 border border-slate-300 rounded-full px-3 py-1.5 min-w-[200px]">
                 <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs mr-2"></i>
                 <input
                     type="text"
                     name="q"
-                    placeholder="Tìm level hoặc từ vựng..."
+                    placeholder="Tìm từ vựng..."
                     class="bg-transparent border-none outline-none text-xs text-slate-700 placeholder:text-slate-400 w-full"
                 >
             </form>
 
             <?php if (!empty($_SESSION['user_id'])): ?>
-                <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                <?php if (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
                     <a href="/admin/index.php"
                        class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-slate-300 text-slate-700 hover:border-[#7AE582] hover:text-[#7AE582] transition">
                         <i class="fa-solid fa-gauge-high text-xs"></i> Admin
                     </a>
                 <?php endif; ?>
-                <span class="hidden sm:inline text-xs text-slate-500">
-                    <?= htmlspecialchars($_SESSION['username']) ?>
+
+                <!-- Username -->
+                <span class="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-300 text-xs text-slate-700">
+                    <i class="fa-solid fa-user text-[0.7rem] text-slate-500"></i>
+                    <?= htmlspecialchars($_SESSION['username'] ?? 'User') ?>
                 </span>
+
                 <a href="/auth/logout.php"
                    class="px-3 py-1.5 rounded-full border border-slate-300 text-xs text-slate-700 hover:bg-red-50 hover:border-red-400 hover:text-red-500 transition">
                     Đăng xuất
                 </a>
             <?php else: ?>
+                <!-- Chỉ hiện Đăng nhập / Đăng ký khi CHƯA đăng nhập -->
                 <a href="/auth/login.php" class="text-slate-600 hover:text-slate-900 text-xs sm:text-sm">
                     Đăng nhập
                 </a>
@@ -111,6 +140,7 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
     </div>
 </nav>
+<?php endif; ?>
 
 <main class="flex-1 w-full">
     <div class="max-w-6xl mx-auto px-4 py-6 sm:py-10">

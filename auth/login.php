@@ -1,11 +1,17 @@
 <?php
+// auth/login.php
+
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/header.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $username = '';
-$error = '';
+$error    = '';
 
+// ================== XỬ LÝ ĐĂNG NHẬP (TRƯỚC KHI GỌI HEADER.PHP) ==================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -22,20 +28,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user['role'] === 'admin') {
             header('Location: /admin/index.php');
         } else {
-            header('Location: /user/learn.php');
+            header('Location: /user/dashboard.php');
         }
         exit;
     } else {
-        $error = 'Sai username hoặc mật khẩu.';
+        $error = 'Sai tên đăng nhập hoặc mật khẩu.';
     }
 }
+
+// ================== HTML ==================
+$pageTitle = 'Đăng nhập | English Learning';
+require_once __DIR__ . '/../includes/header.php';
 ?>
 
-<div class="flex items-center justify-center min-h-[calc(100vh-120px)]">
-    <div class="card-glass w-full max-w-md p-6">
-        <h2 class="text-xl font-semibold mb-1 text-center">Đăng nhập</h2>
-        <p class="text-xs text-slate-500 mb-5 text-center">
-            Tiếp tục với các bài học tiếng Anh của bạn.
+<div class="flex items-center justify-center min-h-[calc(100vh-140px)]">
+    <div class="w-full max-w-md bg-white/95 border border-slate-200 rounded-2xl shadow-lg px-8 py-8">
+        <!-- Logo + tên hệ thống -->
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-11 h-11 rounded-2xl flex items-center justify-center shadow-md"
+                 style="background: #7AE582;">
+                <i class="fa-solid fa-graduation-cap text-white text-lg"></i>
+            </div>
+            <div class="flex flex-col leading-tight">
+                <span class="text-sm font-semibold text-slate-900">English Learning</span>
+                <span class="text-[0.75rem] text-slate-400">Học tiếng Anh miễn phí mỗi ngày</span>
+            </div>
+        </div>
+
+        <!-- Tiêu đề -->
+        <h1 class="text-xl sm:text-2xl font-semibold text-slate-900 mb-1">
+            Chào mừng trở lại!
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-500 mb-6">
+            Đăng nhập để tiếp tục học tập và ôn luyện từ vựng.
         </p>
 
         <?php if ($error): ?>
@@ -44,27 +69,110 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
 
-        <form method="post" class="space-y-3">
-            <div>
-                <label class="text-xs text-slate-600 mb-1 block">Username</label>
-                <input type="text" name="username"
-                       class="w-full rounded-md bg-white border border-slate-300 text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#7AE582]"
-                       value="<?= htmlspecialchars($username) ?>">
+        <form method="post" class="space-y-4">
+            <!-- Username -->
+            <div class="space-y-1">
+                <label class="text-xs font-medium text-slate-700">Tên đăng nhập</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="fa-regular fa-envelope text-sm"></i>
+                    </span>
+                    <input
+                        type="text"
+                        name="username"
+                        value="<?= htmlspecialchars($username) ?>"
+                        class="w-full rounded-lg bg-slate-50 border border-slate-200 text-sm px-10 py-2.5
+                               placeholder:text-slate-400 text-slate-800
+                               focus:outline-none focus:ring-2 focus:ring-[#7AE582] focus:border-[#7AE582]"
+                        placeholder="example@email.com"
+                        required
+                    >
+                </div>
             </div>
-            <div>
-                <label class="text-xs text-slate-600 mb-1 block">Mật khẩu</label>
-                <input type="password" name="password"
-                       class="w-full rounded-md bg-white border border-slate-300 text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#7AE582]">
+
+            <!-- Password -->
+            <div class="space-y-1">
+                <label class="text-xs font-medium text-slate-700">Mật khẩu</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="fa-solid fa-lock text-sm"></i>
+                    </span>
+                    <input
+                        type="password"
+                        name="password"
+                        class="w-full rounded-lg bg-slate-50 border border-slate-200 text-sm px-10 py-2.5
+                               placeholder:text-slate-400 text-slate-800
+                               focus:outline-none focus:ring-2 focus:ring-[#7AE582] focus:border-[#7AE582]"
+                        placeholder="••••••••"
+                        required
+                    >
+                    <!-- icon mắt chỉ là decor, chưa xử lý JS -->
+                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                        <i class="fa-regular fa-eye text-sm"></i>
+                    </span>
+                </div>
             </div>
+
+            <!-- Remember + forgot -->
+            <div class="flex items-center justify-between text-[0.75rem] text-slate-500">
+                <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                        type="checkbox"
+                        name="remember_me"
+                        class="w-3.5 h-3.5 rounded border-slate-300 text-[#7AE582] focus:ring-[#7AE582]"
+                    >
+                    <span>Ghi nhớ đăng nhập</span>
+                </label>
+                <a href="#" class="text-[#7AE582] hover:underline">
+                    Quên mật khẩu?
+                </a>
+            </div>
+
+            <!-- Button login (gradient xanh #7AE582) -->
             <button
-                class="w-full mt-2 px-4 py-2 rounded-md bg-[#7AE582] text-slate-900 text-sm font-semibold hover:bg-emerald-300 transition">
-                Đăng nhập
+                type="submit"
+                class="w-full mt-1 py-2.5 text-sm font-semibold text-white rounded-lg
+                       flex items-center justify-center gap-2
+                       transition
+                       shadow-md"
+                style="background: linear-gradient(90deg, #7AE582, #54CC6D);"
+            >
+                <span>Đăng nhập</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
             </button>
         </form>
 
-        <p class="mt-4 text-center text-xs text-slate-500">
+        <!-- Divider -->
+        <div class="flex items-center gap-3 my-6">
+            <span class="flex-1 h-px bg-slate-200"></span>
+            <span class="text-[0.7rem] text-slate-400">Hoặc đăng nhập với</span>
+            <span class="flex-1 h-px bg-slate-200"></span>
+        </div>
+
+        <!-- Social buttons (dummy) -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <button
+                type="button"
+                class="flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white py-2 text-xs sm:text-sm text-slate-700 hover:bg-slate-50 transition"
+            >
+                <i class="fa-brands fa-google text-sm"></i>
+                <span>Google</span>
+            </button>
+            <button
+                type="button"
+                class="flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white py-2 text-xs sm:text-sm text-slate-700 hover:bg-slate-50 transition"
+            >
+                <i class="fa-brands fa-facebook-f text-sm text-[#1877F2]"></i>
+                <span>Facebook</span>
+            </button>
+        </div>
+
+        <!-- Register link -->
+        <p class="mt-2 text-center text-xs text-slate-500">
             Chưa có tài khoản?
-            <a href="/auth/register.php" class="text-[#16a34a] hover:underline">Đăng ký</a>
+            <a href="/auth/register.php" class="font-medium" style="color:#7AE582;">
+                Đăng ký ngay
+            </a>
         </p>
     </div>
 </div>
