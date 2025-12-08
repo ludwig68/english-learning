@@ -107,7 +107,7 @@ try {
                             <i class="fa-regular fa-clone text-sm" style="color:#7AE582;"></i>
                         </div>
                         <h3 class="text-sm font-semibold text-slate-800">
-                            Flashcard (Level demo)
+                            Flashcard
                         </h3>
                     </div>
                     <p class="text-xs text-slate-500 mb-3">
@@ -127,7 +127,7 @@ try {
                             <i class="fa-solid fa-clipboard-question text-sm" style="color:#7AE582;"></i>
                         </div>
                         <h3 class="text-sm font-semibold text-slate-800">
-                            Luyện tập (Level demo)
+                            Luyện tập
                         </h3>
                     </div>
                     <p class="text-xs text-slate-500 mb-3">

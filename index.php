@@ -181,7 +181,7 @@ if ($q !== '') {
                 <span class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-700">
                     <i class="fa-solid fa-bolt text-xs"></i>
                 </span>
-                Cách hệ thống hoạt động
+                Cách sử dụng hệ thống 
             </h2>
             <div class="grid gap-4 sm:grid-cols-3">
                 <div class="card-glass p-4">
