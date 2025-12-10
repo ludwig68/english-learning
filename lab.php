@@ -2,10 +2,7 @@
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/header.php';
 
-/**
-
- * - Nếu chưa có ảnh, sẽ hiển thị chữ cái "H" làm placeholder
- */
+// Thông tin ảnh đại diện sinh viên
 $profileImageWebPath  = '/uploads/images/z6585190311694_dd360cc1176faf703d256ad8dc9b8426.jpg';
 $profileImageRealPath = __DIR__ . $profileImageWebPath;
 $hasProfileImage      = file_exists($profileImageRealPath);
@@ -58,6 +55,11 @@ $hasProfileImage      = file_exists($profileImageRealPath);
 
 <div class="max-w-5xl mx-auto px-4 -mt-8 pb-12">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <?php
+        // Lấy buổi đang chọn, 0 = chưa chọn buổi nào
+        $selectedBuoi = isset($_GET['buoi']) ? (int)$_GET['buoi'] : 0;
+        ?>
+
         <!-- Cột trái: danh sách lab + chỗ trống hình ảnh project -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Danh sách Lab -->
@@ -69,26 +71,87 @@ $hasProfileImage      = file_exists($profileImageRealPath);
                     <span>Danh sách Lab thực hành</span>
                 </h3>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <?php for ($i = 1; $i <= 10; $i++): ?>
-                        <a href="lab<?php echo $i; ?>.php"
-                            class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 hover:border-primary/60 hover:bg-primary/5 transition-colors group">
-                            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500 group-hover:bg-white group-hover:text-primary shadow-sm">
-                                <span class="font-bold text-sm"><?php echo $i; ?></span>
-                            </div>
-                            <div>
-                                <p class="text-sm font-semibold text-slate-700 group-hover:text-primary">
-                                    Bài tập Tuần <?php echo $i; ?>
-                                </p>
-                                <p class="text-xs text-slate-400 group-hover:text-slate-500">
-                                    Xem chi tiết &rarr;
-                                </p>
-                            </div>
-                        </a>
-                    <?php endfor; ?>
-                </div>
+                <?php if ($selectedBuoi === 0): ?>
+                    <!-- TRẠNG THÁI 1: Hiện danh sách các buổi -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <?php for ($i = 1; $i <= 9; $i++): // Bạn đang có Buoi 1 -> Buoi 9 
+                        ?>
+                            <a href="lab.php?buoi=<?php echo $i; ?>"
+                                class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 hover:border-primary/60 hover:bg-primary/5 transition-colors group">
+                                <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500 group-hover:bg-white group-hover:text-primary shadow-sm">
+                                    <span class="font-bold text-sm"><?php echo $i; ?></span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-700 group-hover:text-primary">
+                                        Bài tập Buổi <?php echo $i; ?>
+                                    </p>
+                                    <p class="text-xs text-slate-400 group-hover:text-slate-500">
+                                        Xem chi tiết &rarr;
+                                    </p>
+                                </div>
+                            </a>
+                        <?php endfor; ?>
+                    </div>
+
+                <?php else: ?>
+                    <!-- TRẠNG THÁI 2: Đang xem 1 buổi cụ thể -->
+                    <?php
+                    // Tên thư mục: Buoi 1, Buoi 2, ...
+                    $folderName   = 'Buoi' . $selectedBuoi;
+                    $relativePath = 'lab/' . $folderName;              // Đường dẫn dùng trong href
+                    $absolutePath = __DIR__ . '/' . $relativePath;     // Đường dẫn thật trên server
+                    ?>
+
+                    <!-- Nút quay lại -->
+                    <button type="button"
+                        onclick="window.location.href='lab.php'"
+                        class="inline-flex items-center gap-2 px-3 py-2 mb-4 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                        <span>Quay lại danh sách Lab</span>
+                    </button>
+
+                    <h4 class="text-base font-semibold text-slate-800 mb-3">
+                        Buổi <?php echo $selectedBuoi; ?> – Danh sách file trong <span class="font-mono text-xs bg-slate-100 px-2 py-1 rounded"><?php echo $folderName; ?></span>
+                    </h4>
+
+                    <?php if (is_dir($absolutePath)): ?>
+                        <ul class="divide-y divide-slate-100 text-sm">
+                            <?php
+                            // Lấy tất cả file/thư mục trong Buoi X (bỏ . và ..)
+                            $items = array_diff(scandir($absolutePath), ['.', '..']);
+                            foreach ($items as $item):
+                                $itemAbsPath = $absolutePath . '/' . $item;
+                                $itemRelPath = $relativePath . '/' . $item; // dùng cho href
+                                $isDir       = is_dir($itemAbsPath);
+                            ?>
+                                <li class="flex items-center justify-between py-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="<?php echo $isDir ? 'fa-regular fa-folder' : 'fa-regular fa-file-lines'; ?> text-slate-400 text-xs"></i>
+                                        <a href="<?php echo htmlspecialchars($itemRelPath); ?>"
+                                            target="_blank"
+                                            class="text-slate-700 hover:text-primary">
+                                            <?php echo $item; ?>
+                                        </a>
+                                    </div>
+                                    <?php if (!$isDir): ?>
+                                        <span class="text-[10px] uppercase tracking-wide text-slate-400">
+                                            <?php echo pathinfo($item, PATHINFO_EXTENSION); ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php else: ?>
+                        <p class="text-sm text-red-500">
+                            Không tìm thấy thư mục cho buổi này:
+                            <span class="font-mono"><?php echo htmlspecialchars($relativePath); ?></span>
+                        </p>
+                    <?php endif; ?>
+
+                <?php endif; ?>
             </div>
         </div>
+
 
         <!-- Cột phải: tài khoản demo + social -->
         <div class="lg:col-span-1 space-y-4">

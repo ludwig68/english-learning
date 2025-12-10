@@ -80,7 +80,6 @@ $level_name = $vocabList[0]['level_name'];
 
 
                 <!-- BACK -->
-                <!-- BACK -->
                 <div class="flashcard-face flashcard-back">
                     <div class="text-sm font-semibold mb-1">
                         <?= htmlspecialchars($v['meaning']) ?>
@@ -101,33 +100,6 @@ $level_name = $vocabList[0]['level_name'];
         </div>
     <?php endforeach; ?>
 </div>
-<script>
-async function saveFlashcardSession() {
-    const formData = new FormData();
-    formData.append('level_id',        currentLevelId);
-    formData.append('mode',            'flashcard');
-    formData.append('vocab_count',     viewedCount);   // số từ đã xem
-    formData.append('correct_count',   viewedCount);   // hoặc 0 nếu không muốn tính
-    formData.append('total_questions', viewedCount);
-    formData.append('note',            'Luyện flashcard');
-    formData.append('questions',       '[]');          // không lưu chi tiết
-
-    try {
-        const res = await fetch('/user/save_history.php', {
-            method: 'POST',
-            body: formData
-        });
-        const data = await res.json();
-        console.log(data);
-    } catch (err) {
-        console.error(err);
-    }
-}
-
-// Gọi khi người dùng bấm "Hoàn thành buổi học" hoặc khi xem hết flashcard
-document.getElementById('btnFinishFlashcard').addEventListener('click', saveFlashcardSession);
-</script>
-
 <?php
 $hideFooter = true;
 require_once __DIR__ . '/../includes/footer.php';
