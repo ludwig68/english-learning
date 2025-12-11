@@ -81,9 +81,7 @@ require_once __DIR__ . '/../includes/header.php';
                         type="text"
                         name="username"
                         value="<?= htmlspecialchars($username) ?>"
-                        class="w-full rounded-lg bg-slate-50 border border-slate-200 text-sm px-10 py-2.5
-                               placeholder:text-slate-400 text-slate-800
-                               focus:outline-none focus:ring-2 focus:ring-[#7AE582] focus:border-[#7AE582]"
+                        class="w-full rounded-lg bg-slate-50 border border-slate-200 text-sm px-10 py-2.5 placeholder:text-slate-400 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7AE582] focus:border-[#7AE582]"
                         placeholder="Tên đăng nhập"
                         required>
                 </div>
@@ -99,9 +97,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <input
                         type="password"
                         name="password"
-                        class="w-full rounded-lg bg-slate-50 border border-slate-200 text-sm px-10 py-2.5
-                               placeholder:text-slate-400 text-slate-800
-                               focus:outline-none focus:ring-2 focus:ring-[#7AE582] focus:border-[#7AE582]"
+                        class="w-full rounded-lg bg-slate-50 border border-slate-200 text-sm px-10 py-2.5 placeholder:text-slate-400 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7AE582] focus:border-[#7AE582]"
                         placeholder="••••••••"
                         required>
                     <!-- icon mắt chỉ là decor, chưa xử lý JS -->
@@ -128,10 +124,7 @@ require_once __DIR__ . '/../includes/header.php';
             <!-- Button login (gradient xanh #7AE582) -->
             <button
                 type="submit"
-                class="w-full mt-1 py-2.5 text-sm font-semibold text-white rounded-lg
-                       flex items-center justify-center gap-2
-                       transition
-                       shadow-md"
+                class="w-full mt-1 py-2.5 text-sm font-semibold text-white rounded-lg flex items-center justify-center gap-2 transition shadow-md"
                 style="background: linear-gradient(90deg, #7AE582, #54CC6D);">
                 <span>Đăng nhập</span>
                 <i class="fa-solid fa-arrow-right text-xs"></i>
