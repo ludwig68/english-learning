@@ -14,8 +14,8 @@ $errors   = [];
 // ================== XỬ LÝ ĐĂNG KÝ (TRƯỚC KHI GỌI HEADER) ==================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username         = trim($_POST['username'] ?? '');
-    $password         = $_POST['password'] ?? '';
-    $password_confirm = $_POST['password_confirm'] ?? '';
+    $password         = trim($_POST['password'] ?? '');
+    $password_confirm = trim($_POST['password_confirm'] ?? '');
 
     if ($username === '') {
         $errors[] = 'Username không được để trống.';
@@ -23,6 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($password === '') {
         $errors[] = 'Mật khẩu không được để trống.';
+    }
+
+    if ($password !== '' && strlen($password) < 6) {
+        $errors[] = 'Mật khẩu phải có ít nhất 6 ký tự.';
     }
 
     if ($password !== $password_confirm) {

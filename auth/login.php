@@ -60,7 +60,8 @@ require_once __DIR__ . '/../includes/header.php';
             Chào mừng trở lại!
         </h1>
         <p class="text-xs sm:text-sm text-slate-500 mb-6">
-            Đăng nhập để tiếp tục học tập và ôn luyện từ vựng.
+            Đăng nhập để tiếp tục học tập và ôn luyện từ vựng. Phiên sẽ kết thúc khi
+            bạn đóng trình duyệt để bảo vệ tài khoản.
         </p>
 
         <?php if ($error): ?>
@@ -107,15 +108,8 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
             </div>
 
-            <!-- Remember + forgot -->
-            <div class="flex items-center justify-between text-[0.75rem] text-slate-500">
-                <label class="inline-flex items-center gap-2 cursor-pointer select-none">
-                    <input
-                        type="checkbox"
-                        name="remember_me"
-                        class="w-3.5 h-3.5 rounded border-slate-300 text-[#7AE582] focus:ring-[#7AE582]">
-                    <span>Ghi nhớ đăng nhập</span>
-                </label>
+            <!-- Forgot password placeholder -->
+            <div class="flex justify-end text-[0.75rem] text-slate-500">
                 <a href="#" class="text-[#7AE582] hover:underline">
                     Quên mật khẩu?
                 </a>

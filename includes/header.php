@@ -16,6 +16,10 @@ $isAuthPage = (
     strpos($currentScript, '/auth/register.php') !== false
 );
 
+// Trạng thái bộ lọc tìm kiếm hiện tại để giữ state khi quay lại
+$searchType = $_GET['type'] ?? 'all';
+$searchType = in_array($searchType, ['all', 'levels', 'vocab'], true) ? $searchType : 'all';
+
 // Nếu đã đăng nhập mà vẫn truy cập login/register -> đẩy về dashboard
 if (!empty($_SESSION['user_id']) && $isAuthPage) {
     header('Location: /user/dashboard.php');
@@ -98,15 +102,26 @@ if (!empty($_SESSION['user_id']) && $isAuthPage) {
         <!-- Right: Search + Auth -->
         <div class="flex items-center gap-3 text-sm">
             <!-- Search -->
-            <form action="/index.php" method="get"
-                  class="hidden sm:flex items-center bg-slate-100 border border-slate-300 rounded-full px-3 py-1.5 min-w-[200px]">
-                <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs mr-2"></i>
+            <form action="/search.php" method="get"
+                  class="hidden sm:flex items-center bg-slate-100 border border-slate-300 rounded-full px-3 py-1.5 min-w-[320px] gap-2">
+                <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
                 <input
                     type="text"
                     name="q"
-                    placeholder="Tìm từ vựng..."
-                    class="bg-transparent border-none outline-none text-xs text-slate-700 placeholder:text-slate-400 w-full"
+                    value="<?= htmlspecialchars($_GET['q'] ?? '') ?>"
+                    placeholder="Tìm level hoặc từ vựng..."
+                    class="bg-transparent border-none outline-none text-sm text-slate-700 placeholder:text-slate-400 w-full"
                 >
+                <select name="type"
+                        class="text-[0.75rem] rounded-full border border-slate-200 bg-white px-2 py-1 outline-none focus:border-[#7AE582] focus:ring-1 focus:ring-[#7AE582]">
+                    <option value="all" <?= $searchType === 'all' ? 'selected' : '' ?>>Tất cả</option>
+                    <option value="levels" <?= $searchType === 'levels' ? 'selected' : '' ?>>Level</option>
+                    <option value="vocab" <?= $searchType === 'vocab' ? 'selected' : '' ?>>Từ vựng</option>
+                </select>
+                <button type="submit"
+                        class="px-3 py-1 rounded-full bg-white border border-slate-300 text-[0.75rem] text-slate-700 hover:border-[#7AE582] hover:text-[#16a34a] transition">
+                    Tìm
+                </button>
             </form>
 
             <?php if (!empty($_SESSION['user_id'])): ?>
