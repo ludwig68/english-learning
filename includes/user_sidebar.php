@@ -113,7 +113,7 @@ function user_sidebar_class(string $file, string $current): string
                class="flex items-center justify-between px-3 py-2 rounded-xl <?= user_sidebar_class('report.php', $current) ?>">
                 <span class="flex items-center gap-2">
                     <i class="fa-solid fa-clipboard-question text-xs"></i>
-                    <span>Báo cáo lỗi</span>
+                    <span>Báo cáo tiến độ</span>
                 </span>
                 <i class="fa-solid fa-chevron-right text-[0.6rem] opacity-60"></i>
             </a>

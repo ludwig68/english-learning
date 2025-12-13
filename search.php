@@ -5,51 +5,44 @@ require_once __DIR__ . '/includes/header.php';
 $isLoggedIn = !empty($_SESSION['user_id']);
 
 $q = isset($_GET['q']) ? trim($_GET['q']) : '';
-$allowedTypes = ['all', 'levels', 'vocab'];
-$type = isset($_GET['type']) ? strtolower($_GET['type']) : 'all';
-if (!in_array($type, $allowedTypes, true)) {
-    $type = 'all';
-}
-
+$type = 'all'; // giữ lại biến cũ để tránh cảnh báo khi render phần kết quả
 $levels = [];
 $vocabResults = [];
 
 if ($q !== '') {
-    if ($type === 'all' || $type === 'levels') {
-        $stmt = $pdo->prepare("
-            SELECT *
-            FROM levels
-            WHERE name LIKE :kw1 OR description LIKE :kw2
-            ORDER BY id
-        ");
-        $stmt->execute([
-            ':kw1' => '%' . $q . '%',
-            ':kw2' => '%' . $q . '%',
-        ]);
-        $levels = $stmt->fetchAll();
-    }
+    // Levels
+    $stmt = $pdo->prepare("
+        SELECT *
+        FROM levels
+        WHERE name LIKE :kw1 OR description LIKE :kw2
+        ORDER BY id
+    ");
+    $stmt->execute([
+        ':kw1' => '%' . $q . '%',
+        ':kw2' => '%' . $q . '%',
+    ]);
+    $levels = $stmt->fetchAll();
 
-    if ($type === 'all' || $type === 'vocab') {
-        $stmt = $pdo->prepare("
-            SELECT v.*, l.name AS level_name
-            FROM vocabularies v
-            JOIN levels l ON v.level_id = l.id
-            WHERE v.deleted_at IS NULL
-              AND (
-                  v.word LIKE :kw1
-                  OR v.meaning LIKE :kw2
-                  OR v.example_sentence LIKE :kw3
-              )
-            ORDER BY v.id
-            LIMIT 50
-        ");
-        $stmt->execute([
-            ':kw1' => '%' . $q . '%',
-            ':kw2' => '%' . $q . '%',
-            ':kw3' => '%' . $q . '%',
-        ]);
-        $vocabResults = $stmt->fetchAll();
-    }
+    // Vocab
+    $stmt = $pdo->prepare("
+        SELECT v.*, l.name AS level_name
+        FROM vocabularies v
+        JOIN levels l ON v.level_id = l.id
+        WHERE v.deleted_at IS NULL
+          AND (
+              v.word LIKE :kw1
+              OR v.meaning LIKE :kw2
+              OR v.example_sentence LIKE :kw3
+          )
+        ORDER BY v.id
+        LIMIT 50
+    ");
+    $stmt->execute([
+        ':kw1' => '%' . $q . '%',
+        ':kw2' => '%' . $q . '%',
+        ':kw3' => '%' . $q . '%',
+    ]);
+    $vocabResults = $stmt->fetchAll();
 }
 ?>
 
@@ -66,28 +59,16 @@ if ($q !== '') {
 </div>
 
 <form action="/search.php" method="get"
-      class="bg-white border border-slate-200 rounded-2xl px-3 sm:px-4 py-3 flex flex-col sm:flex-row gap-3 sm:items-center shadow-sm">
+      class="bg-white border border-slate-200 rounded-2xl px-3 sm:px-4 py-3 flex items-center gap-3 shadow-sm">
     <div class="flex-1 flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
         <i class="fa-solid fa-magnifying-glass text-slate-400 text-sm"></i>
         <input
             type="text"
             name="q"
             value="<?= htmlspecialchars($q) ?>"
-            placeholder="Nhập từ vựng, nghĩa hoặc tên level..."
+            placeholder="Nhập từ vựng, nghĩa hoặc tên level và nhấn Enter..."
             class="flex-1 bg-transparent border-none outline-none text-sm text-slate-700 placeholder:text-slate-400"
         >
-    </div>
-    <div class="flex items-center gap-2">
-        <select name="type"
-                class="text-sm rounded-xl border border-slate-200 bg-white px-3 py-2 outline-none focus:border-[#7AE582] focus:ring-1 focus:ring-[#7AE582]">
-            <option value="all" <?= $type === 'all' ? 'selected' : '' ?>>Tất cả</option>
-            <option value="levels" <?= $type === 'levels' ? 'selected' : '' ?>>Chỉ Level</option>
-            <option value="vocab" <?= $type === 'vocab' ? 'selected' : '' ?>>Chỉ từ vựng</option>
-        </select>
-        <button type="submit"
-                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#7AE582] text-slate-900 text-sm font-semibold hover:bg-emerald-300 transition">
-            <i class="fa-solid fa-filter text-xs"></i> Lọc kết quả
-        </button>
     </div>
 </form>
 
