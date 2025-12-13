@@ -11,7 +11,13 @@ if (session_status() === PHP_SESSION_NONE) {
 $username = '';
 $error    = '';
 
-// ================== XỬ LÝ ĐĂNG NHẬP (TRƯỚC KHI GỌI HEADER.PHP) ==================
+// Nhận thông báo lỗi khi bị chuyển hướng do tài khoản bị khóa/xóa
+$errorCode = $_GET['error'] ?? '';
+if ($errorCode === 'blocked') {
+    $error = 'Tài khoản đã bị khóa hoặc không còn tồn tại. Vui lòng liên hệ quản trị viên.';
+}
+
+// ================== Xử lý ĐĂNG NHẬP (TRƯỚC KHI GỌI HEADER.PHP) ==================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -21,16 +27,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $stmt->fetch();
 
     if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['user_id']   = $user['id'];
-        $_SESSION['username']  = $user['username'];
-        $_SESSION['user_role'] = $user['role'];
-
-        if ($user['role'] === 'admin') {
-            header('Location: /admin/index.php');
+        if (!empty($user['deleted_at'])) {
+            $error = 'Tài khoản đã bị xóa. Liên hệ quản trị viên để được khôi phục.';
+        } elseif ($user['status'] === 'blocked') {
+            $error = 'Tài khoản đang bị khóa. Liên hệ quản trị viên để mở khóa.';
         } else {
-            header('Location: /user/dashboard.php');
+            $_SESSION['user_id']   = $user['id'];
+            $_SESSION['username']  = $user['username'];
+            $_SESSION['user_role'] = $user['role'];
+
+            if ($user['role'] === 'admin') {
+                header('Location: /admin/index.php');
+            } else {
+                header('Location: /user/dashboard.php');
+            }
+            exit;
         }
-        exit;
     } else {
         $error = 'Sai tên đăng nhập hoặc mật khẩu.';
     }
@@ -101,7 +113,7 @@ require_once __DIR__ . '/../includes/header.php';
                         class="w-full rounded-lg bg-slate-50 border border-slate-200 text-sm px-10 py-2.5 placeholder:text-slate-400 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7AE582] focus:border-[#7AE582]"
                         placeholder="••••••••"
                         required>
-                    <!-- icon mắt chỉ là decor, chưa xử lý JS -->
+                    <!-- icon mắt chỉ là decor -->
                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
                         <i class="fa-regular fa-eye text-sm"></i>
                     </span>
@@ -155,13 +167,13 @@ require_once __DIR__ . '/../includes/header.php';
                 Đăng ký ngay
             </a>
         </p>
-        <!-- ========= FORM RIÊNG: TÀI KHOẢN DEMO ========= -->
+        <!-- ========= FORM DEMO ========= -->
         <div class="mt-5 relative overflow-hidden rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 p-4">
             <div class="absolute -top-6 -right-6 w-16 h-16 bg-blue-100 rounded-full blur-xl opacity-50"></div>
 
             <div class="relative z-10">
                 <h4 class="text-xs font-bold text-blue-800 flex items-center gap-2 mb-3">
-                    <i class="fa-solid fa-key"></i> Tài khoản dùng thử
+                    <i class="fa-solid fa-key"></i> Tài khoản đang thử
                 </h4>
 
                 <div class="flex flex-col sm:flex-row gap-3">
