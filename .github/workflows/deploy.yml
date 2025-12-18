@@ -3,11 +3,21 @@ name: ABC
 on:
   push:
     branches:
-      - main   # Nếu bạn dùng branch khác thì đổi lại
-  workflow_dispatch: # Cho phép chạy tay trong tab Actions
+      - main
+  workflow_dispatch:  # chạy tay trong tab Actions
 
 jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: CI only (no deploy)
+        run: echo "Push thì chỉ chạy CI, không đụng host"
+
   ftp-deploy:
+    needs: ci
+    if: github.event_name == 'workflow_dispatch'   # ✅ CHỈ deploy khi bấm Run workflow
     runs-on: ubuntu-latest
 
     steps:
@@ -20,17 +30,10 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-
           protocol: ftp
           port: 21
-
-          # Thư mục code trên Git (thường để ./ là đủ)
           local-dir: ./
-
-          # Thư mục web root trên host VietNix
           server-dir: ${{ secrets.FTP_PATH }}
-
-          # Loại trừ các thư mục/file không cần upload
           exclude: |
             **/.git*
             **/.git*/**
@@ -38,4 +41,3 @@ jobs:
             **/.vscode/**
             **/.idea/**
             **/.DS_Store
-            
