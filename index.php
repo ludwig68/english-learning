@@ -59,7 +59,6 @@ if ($q !== '') {
                 <i class="fa-solid fa-graduation-cap"></i>
                 Free English Learning
             </span>
-            <h1>Hoàng Nhật Trường - Ca Cuối</h1>
             <h1 class="text-3xl sm:text-4xl font-bold mb-3">
                 Xây nền tảng tiếng Anh của bạn với
                 <span class="text-[#7AE582]">flashcard</span> &amp; bài luyện tập.
@@ -69,7 +68,8 @@ if ($q !== '') {
                 phù hợp cho người mới bắt đầu đến nâng cao.
             </p>
 
-            <div class="flex flex-wrap justify-center gap-3 mt-5">
+            <div class="flex flex-wrap justify-center gap-3 mt-5">git pull origin main
+
                 <?php if (!$isLoggedIn): ?>
                     <!-- Chưa đăng nhập: nút đăng ký + đăng nhập -->
                     <a href="/auth/register.php"
