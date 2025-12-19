@@ -59,6 +59,7 @@ if ($q !== '') {
                 <i class="fa-solid fa-graduation-cap"></i>
                 Free English Learning
             </span>
+            <h1>Hoàng Nhật Trường - Ca Cuối</h1>
             <h1 class="text-3xl sm:text-4xl font-bold mb-3">
                 Xây nền tảng tiếng Anh của bạn với
                 <span class="text-[#7AE582]">flashcard</span> &amp; bài luyện tập.
